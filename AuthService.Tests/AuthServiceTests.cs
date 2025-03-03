@@ -34,12 +34,10 @@ public class AuthServiceTests
         // Arrange
         var registerModel = new RegisterModel { Email = "test@example.com", Password = "Password123!" };
 
-        // Створюємо мок для UserStore, оскільки UserManager вимагає його
         var userStoreMock = new Mock<IUserStore<IdentityUser>>();
         var userManagerMock = new Mock<UserManager<IdentityUser>>(
             userStoreMock.Object, null, null, null, null, null, null, null, null);
 
-        // Налаштовуємо CreateAsync так, щоб повертати успішний результат
         userManagerMock.Setup(um => um.CreateAsync(It.IsAny<IdentityUser>(), It.IsAny<string>()))
             .ReturnsAsync(IdentityResult.Success);
 
