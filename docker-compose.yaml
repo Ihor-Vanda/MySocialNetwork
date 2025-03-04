@@ -22,6 +22,18 @@ services:
       sqlserver:
         condition: service_healthy
 
+  userprofileservice:
+    build:
+      context: .
+      dockerfile: UserProfileService/Dockerfile
+    ports:
+      - "5002:80"
+    environment:
+      - ASPNETCORE_URLS=http://+:80
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+
   sqlserver:
     image: mcr.microsoft.com/mssql/server:2019-latest
     environment:

@@ -9,6 +9,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiGateway", "ApiGateway\Ap
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuthService.Tests", "AuthService.Tests\AuthService.Tests.csproj", "{D67754FA-32BD-4FD8-A853-EDC0DE0CAF0D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserProfileService", "UserProfileService\UserProfileService.csproj", "{2FC18D37-0906-4D25-8458-85F0BEF2BF9E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserProfileService.Tests", "UserProfileService.Tests\UserProfileService.Tests.csproj", "{8A2E9FC3-DF8C-4B7E-A32C-B31653F88A38}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +34,13 @@ Global
 		{D67754FA-32BD-4FD8-A853-EDC0DE0CAF0D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D67754FA-32BD-4FD8-A853-EDC0DE0CAF0D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D67754FA-32BD-4FD8-A853-EDC0DE0CAF0D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2FC18D37-0906-4D25-8458-85F0BEF2BF9E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2FC18D37-0906-4D25-8458-85F0BEF2BF9E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2FC18D37-0906-4D25-8458-85F0BEF2BF9E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2FC18D37-0906-4D25-8458-85F0BEF2BF9E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8A2E9FC3-DF8C-4B7E-A32C-B31653F88A38}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8A2E9FC3-DF8C-4B7E-A32C-B31653F88A38}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8A2E9FC3-DF8C-4B7E-A32C-B31653F88A38}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8A2E9FC3-DF8C-4B7E-A32C-B31653F88A38}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

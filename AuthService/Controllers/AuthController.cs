@@ -42,7 +42,7 @@ namespace AuthService.Controllers
 
             if (result.Succeeded)
             {
-                return Ok(new { Message = "User registered successfully" });
+                return CreatedAtAction(nameof(Register), new { id = model.Id }, model);
             }
 
             return BadRequest(result.Errors);

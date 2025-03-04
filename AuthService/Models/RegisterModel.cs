@@ -7,6 +7,8 @@ namespace AuthService.Models
 {
     public class RegisterModel
     {
+        public Guid Id { get; } = Guid.NewGuid();
+
         public required string Email { get; set; }
 
         public required string Password { get; set; }
