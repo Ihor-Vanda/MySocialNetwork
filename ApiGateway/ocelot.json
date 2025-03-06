@@ -1,81 +1,9 @@
 {
-  "Routes": [
-    {
-      "DownstreamPathTemplate": "/auth/register",
-      "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "authservice",
-          "Port": 80
-        }
-      ],
-      "UpstreamPathTemplate": "/api/auth/register",
-      "UpstreamHttpMethod": ["POST"],
-      "Key": "AuthService"
-    },
-    {
-      "DownstreamPathTemplate": "/auth/login",
-      "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "authservice",
-          "Port": 80
-        }
-      ],
-      "UpstreamPathTemplate": "/api/auth/login",
-      "UpstreamHttpMethod": ["POST"],
-      "Key": "AuthService"
-    },
-    {
-      "DownstreamPathTemplate": "/profiles/get/{id}",
-      "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "profileservice",
-          "Port": 80
-        }
-      ],
-      "UpstreamPathTemplate": "api/profiles/get/{id}",
-      "UpstreamHttpMethod": ["GET"],
-      "Key": "ProfileService"
-    },
-    {
-      "DownstreamPathTemplate": "/profiles/put/{id}",
-      "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "profileservice",
-          "Port": 80
-        }
-      ],
-      "UpstreamPathTemplate": "api/profiles/put/{id}",
-      "UpstreamHttpMethod": ["PUT"],
-      "Key": "ProfileService"
-    },
-    {
-      "DownstreamPathTemplate": "/profiles/delete/{id}",
-      "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "profileservice",
-          "Port": 80
-        }
-      ],
-      "UpstreamPathTemplate": "api/profiles/delete/{id}",
-      "UpstreamHttpMethod": ["DELETE"],
-      "Key": "ProfileService"
-    }
-  ],
   "ReRoutes": [
     {
       "DownstreamPathTemplate": "/auth/register",
       "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "authservice",
-          "Port": 80
-        }
-      ],
+      "DownstreamHostAndPorts": [{ "Host": "authservice", "Port": 80 }],
       "UpstreamPathTemplate": "/auth/register",
       "UpstreamHttpMethod": ["POST"],
       "Key": "AuthService"
@@ -83,25 +11,41 @@
     {
       "DownstreamPathTemplate": "/profiles/create",
       "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "profileservice",
-          "Port": 80
-        }
-      ],
+      "DownstreamHostAndPorts": [{ "Host": "profileservice", "Port": 80 }],
       "UpstreamPathTemplate": "/profiles/create",
       "UpstreamHttpMethod": ["POST"],
-      "Key": "ProfileService"
+      "Key": "ProfileServiceCreate"
+    },
+    {
+      "DownstreamPathTemplate": "/profiles/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [{ "Host": "profileservice", "Port": 80 }],
+      "UpstreamPathTemplate": "/profiles/{id}",
+      "UpstreamHttpMethod": ["GET"],
+      "Key": "ProfileServiceRead"
+    },
+    {
+      "DownstreamPathTemplate": "/profiles/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [{ "Host": "profileservice", "Port": 80 }],
+      "UpstreamPathTemplate": "/profiles/{id}",
+      "UpstreamHttpMethod": ["PUT"],
+      "Key": "ProfileServiceUpdate"
+    },
+    {
+      "DownstreamPathTemplate": "/profiles/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [{ "Host": "profileservice", "Port": 80 }],
+      "UpstreamPathTemplate": "/profiles/{id}",
+      "UpstreamHttpMethod": ["DELETE"],
+      "Key": "ProfileServiceDelete"
     }
   ],
   "Aggregates": [
     {
-      "RouteKeys": ["AuthService", "ProfileService"],
+      "RouteKeys": ["AuthService", "ProfileServiceCreate"],
       "UpstreamPathTemplate": "/api/register",
       "UpstreamHttpMethod": ["POST"]
     }
-  ],
-  "GlobalConfiguration": {
-    "BaseUrl": "http://apigateway:80"
-  }
+  ]
 }

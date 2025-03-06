@@ -48,7 +48,16 @@ namespace UserProfileService.Controllers
             if (id != updatedProfile.Id)
                 return BadRequest();
 
-            _context.Entry(updatedProfile).State = EntityState.Modified;
+            var existingProfile = await _context.UserProfiles.FindAsync(id);
+            if (existingProfile == null)
+                return NotFound();
+
+            existingProfile.FirstName = updatedProfile.FirstName;
+            existingProfile.LastName = updatedProfile.LastName;
+            existingProfile.BirthDate = updatedProfile.BirthDate;
+            existingProfile.Bio = updatedProfile.Bio;
+            existingProfile.ProfilePictureUrl = updatedProfile.ProfilePictureUrl;
+
             await _context.SaveChangesAsync();
             return NoContent();
         }

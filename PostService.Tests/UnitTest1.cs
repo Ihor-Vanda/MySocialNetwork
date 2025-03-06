@@ -1,4 +1,4 @@
-﻿namespace UserProfileService.Tests;
+﻿namespace PostService.Tests;
 
 public class UnitTest1
 {
