@@ -1,51 +1,102 @@
 {
-  "ReRoutes": [
+  "Routes": [
     {
+      "Key": "AuthServiceRegister",
       "DownstreamPathTemplate": "/auth/register",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [{ "Host": "authservice", "Port": 80 }],
-      "UpstreamPathTemplate": "/auth/register",
-      "UpstreamHttpMethod": ["POST"],
-      "Key": "AuthService"
+      "UpstreamPathTemplate": "/api/auth/register",
+      "UpstreamHttpMethod": ["POST"]
     },
     {
+      "Key": "AuthServiceLogin",
+      "DownstreamPathTemplate": "/auth/login",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [{ "Host": "authservice", "Port": 80 }],
+      "UpstreamPathTemplate": "/api/auth/login",
+      "UpstreamHttpMethod": ["POST"]
+    },
+    {
+      "Key": "ProfileServiceCreate",
       "DownstreamPathTemplate": "/profiles/create",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [{ "Host": "profileservice", "Port": 80 }],
-      "UpstreamPathTemplate": "/profiles/create",
-      "UpstreamHttpMethod": ["POST"],
-      "Key": "ProfileServiceCreate"
+      "UpstreamPathTemplate": "/api/profiles/create",
+      "UpstreamHttpMethod": ["POST"]
     },
     {
+      "Key": "ProfileServiceGet",
       "DownstreamPathTemplate": "/profiles/{id}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [{ "Host": "profileservice", "Port": 80 }],
-      "UpstreamPathTemplate": "/profiles/{id}",
-      "UpstreamHttpMethod": ["GET"],
-      "Key": "ProfileServiceRead"
+      "UpstreamPathTemplate": "/api/profiles/{id}",
+      "UpstreamHttpMethod": ["GET"]
     },
     {
+      "Key": "ProfileServiceUpdate",
       "DownstreamPathTemplate": "/profiles/{id}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [{ "Host": "profileservice", "Port": 80 }],
-      "UpstreamPathTemplate": "/profiles/{id}",
-      "UpstreamHttpMethod": ["PUT"],
-      "Key": "ProfileServiceUpdate"
+      "UpstreamPathTemplate": "/api/profiles/{id}",
+      "UpstreamHttpMethod": ["PUT"]
     },
     {
+      "Key": "ProfileServiceDelete",
       "DownstreamPathTemplate": "/profiles/{id}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [{ "Host": "profileservice", "Port": 80 }],
-      "UpstreamPathTemplate": "/profiles/{id}",
-      "UpstreamHttpMethod": ["DELETE"],
-      "Key": "ProfileServiceDelete"
+      "UpstreamPathTemplate": "/api/profiles/{id}",
+      "UpstreamHttpMethod": ["DELETE"]
+    },
+    {
+      "Key": "PostServiceList",
+      "DownstreamPathTemplate": "/posts",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [{ "Host": "postservice", "Port": 80 }],
+      "UpstreamPathTemplate": "/api/posts",
+      "UpstreamHttpMethod": ["GET"]
+    },
+    {
+      "Key": "PostServiceGet",
+      "DownstreamPathTemplate": "/posts/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [{ "Host": "postservice", "Port": 80 }],
+      "UpstreamPathTemplate": "/api/posts/{id}",
+      "UpstreamHttpMethod": ["GET"]
+    },
+    {
+      "Key": "PostServiceCreate",
+      "DownstreamPathTemplate": "/posts",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [{ "Host": "postservice", "Port": 80 }],
+      "UpstreamPathTemplate": "/api/posts",
+      "UpstreamHttpMethod": ["POST"]
+    },
+    {
+      "Key": "PostServiceUpdate",
+      "DownstreamPathTemplate": "/posts/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [{ "Host": "postservice", "Port": 80 }],
+      "UpstreamPathTemplate": "/api/posts/{id}",
+      "UpstreamHttpMethod": ["PUT"]
+    },
+    {
+      "Key": "PostServiceDelete",
+      "DownstreamPathTemplate": "/posts/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [{ "Host": "postservice", "Port": 80 }],
+      "UpstreamPathTemplate": "/api/posts/{id}",
+      "UpstreamHttpMethod": ["DELETE"]
     }
   ],
   "Aggregates": [
     {
-      "RouteKeys": ["AuthService", "ProfileServiceCreate"],
+      "RouteKeys": ["AuthServiceRegister", "ProfileServiceCreate"],
       "UpstreamPathTemplate": "/api/register",
       "UpstreamHttpMethod": ["POST"]
     }
-  ]
+  ],
+  "GlobalConfiguration": {
+    "BaseUrl": "http://localhost:80"
+  }
 }

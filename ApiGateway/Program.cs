@@ -13,9 +13,12 @@ Log.Logger = new LoggerConfiguration()
     .WriteTo.File("Logs/log.txt", rollingInterval: RollingInterval.Day)
     .CreateLogger();
 
-builder.Configuration.AddJsonFile("ocelot.json", optional: false, reloadOnChange: true);
+builder.Configuration
+    .AddJsonFile("ocelot.json", optional: false, reloadOnChange: true);
 
-builder.Services.AddOcelot(builder.Configuration);
+builder.Services
+    .AddOcelot(builder.Configuration)
+    .AddSingletonDefinedAggregator<RegisterAggregator>();
 
 var app = builder.Build();
 
