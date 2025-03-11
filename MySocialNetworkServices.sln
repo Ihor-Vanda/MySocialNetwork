@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PostService", "PostService\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PostService.Tests", "PostService.Tests\PostService.Tests.csproj", "{CE96B17F-F093-434C-8703-C3A6E1F16B63}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiGateway.Tests", "ApiGateway.Tests\ApiGateway.Tests.csproj", "{A322E81A-C962-4DF9-8283-3D68BCC51938}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -54,5 +56,9 @@ Global
 		{CE96B17F-F093-434C-8703-C3A6E1F16B63}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CE96B17F-F093-434C-8703-C3A6E1F16B63}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CE96B17F-F093-434C-8703-C3A6E1F16B63}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A322E81A-C962-4DF9-8283-3D68BCC51938}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A322E81A-C962-4DF9-8283-3D68BCC51938}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A322E81A-C962-4DF9-8283-3D68BCC51938}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A322E81A-C962-4DF9-8283-3D68BCC51938}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
