@@ -1,5 +1,5 @@
 services:
-  apigateway:
+  api-gateway-service:
     build:
       context: .
       dockerfile: ApiGateway/Dockerfile
@@ -8,10 +8,10 @@ services:
     environment:
       - ASPNETCORE_URLS=http://+:80
     depends_on:
-      sqlserver:
+      sql-server:
         condition: service_healthy
 
-  authservice:
+  auth-service:
     build:
       context: .
       dockerfile: AuthService/Dockerfile
@@ -20,10 +20,10 @@ services:
     environment:
       - ASPNETCORE_URLS=http://+:80
     depends_on:
-      sqlserver:
+      sql-server:
         condition: service_healthy
 
-  userprofileservice:
+  user-profile-service:
     build:
       context: .
       dockerfile: UserProfileService/Dockerfile
@@ -32,10 +32,10 @@ services:
     environment:
       - ASPNETCORE_URLS=http://+:80
     depends_on:
-      sqlserver:
+      sql-server:
         condition: service_healthy
 
-  postservice:
+  post-service:
     build:
       context: .
       dockerfile: PostService/Dockerfile
@@ -44,10 +44,10 @@ services:
     environment:
       - ASPNETCORE_URLS=http://+:80
     depends_on:
-      sqlserver:
+      sql-server:
         condition: service_healthy
 
-  sqlserver:
+  sql-server:
     image: mcr.microsoft.com/mssql/server:2019-latest
     environment:
       SA_PASSWORD: "Str0ngPass123!"
@@ -66,7 +66,7 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      - sqlserver
+      - sql-server
 
 volumes:
   sql_data:
