@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using UserProfileService.Controllers;
 using UserProfileService.Models;
 
@@ -29,6 +30,8 @@ public class UserProfilesControllerTests
         var controller = new UserProfilesController(context);
         var newProfile = new UserProfile
         {
+            Id = Guid.NewGuid(),
+            Login = "Login",
             FirstName = "John",
             LastName = "Doe",
             BirthDate = new DateTime(1990, 1, 1),
@@ -47,37 +50,26 @@ public class UserProfilesControllerTests
     }
 
     [Fact]
-    public async Task Update_ReturnsBadRequest_WhenIdMismatch()
+    public async Task Update_ReturnsNotFound_WhenIdMismatch()
     {
         // Arrange
         using var context = InMemoryDbContextFactory.GetInMemoryContext();
         var controller = new UserProfilesController(context);
-        var existingProfile = new UserProfile
-        {
-            Id = Guid.NewGuid(),
-            FirstName = "Alice",
-            LastName = "Smith",
-            BirthDate = new DateTime(1985, 5, 5),
-            Bio = "Initial bio"
-        };
-
-        context.UserProfiles.Add(existingProfile);
-        await context.SaveChangesAsync();
 
         // Act
-        var updatedProfile = new UserProfile
+        var updatedProfile = new UpdateUserProfileDTO
         {
-            Id = Guid.NewGuid(),
+            Login = "newLogin",
             FirstName = "Alice",
             LastName = "Johnson",
-            BirthDate = existingProfile.BirthDate,
+            BirthDate = new DateTime(1990, 1, 1),
             Bio = "Updated bio"
         };
 
-        var result = await controller.Update(existingProfile.Id, updatedProfile);
+        var result = await controller.Update(Guid.NewGuid(), updatedProfile);
 
         // Assert
-        Assert.IsType<BadRequestResult>(result);
+        Assert.IsType<NotFoundResult>(result);
     }
 
     [Fact]
@@ -89,6 +81,7 @@ public class UserProfilesControllerTests
         var existingProfile = new UserProfile
         {
             Id = Guid.NewGuid(),
+            Login = "Login",
             FirstName = "Alice",
             LastName = "Smith",
             BirthDate = new DateTime(1985, 5, 5),
@@ -99,9 +92,9 @@ public class UserProfilesControllerTests
         await context.SaveChangesAsync();
 
         // Act
-        var updatedProfile = new UserProfile
+        var updatedProfile = new UpdateUserProfileDTO
         {
-            Id = existingProfile.Id,
+            Login = "Login",
             FirstName = "Alice",
             LastName = "Johnson",
             BirthDate = existingProfile.BirthDate,
@@ -144,6 +137,7 @@ public class UserProfilesControllerTests
         var newProfile = new UserProfile
         {
             Id = Guid.NewGuid(),
+            Login = "Login",
             FirstName = "Bob",
             LastName = "Marley",
             BirthDate = new DateTime(1975, 2, 6),

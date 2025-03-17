@@ -13,7 +13,7 @@ using UserProfileService.Repo;
 namespace UserProfileService.Controllers
 {
     [ApiController]
-    [Route("api/userprofile")]
+    [Route("profiles")]
     public class UserProfilesController : ControllerBase
     {
         private readonly UserProfileDbContext _context;
@@ -43,11 +43,8 @@ namespace UserProfileService.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(Guid id, [FromBody] UserProfile updatedProfile)
+        public async Task<IActionResult> Update(Guid id, [FromBody] UpdateUserProfileDTO updatedProfile)
         {
-            if (id != updatedProfile.Id)
-                return BadRequest();
-
             var existingProfile = await _context.UserProfiles.FindAsync(id);
             if (existingProfile == null)
                 return NotFound();

@@ -4,13 +4,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using PostService.DTOs;
 using PostService.Models;
 using PostService.Repo;
 
 namespace PostService.Controllers
 {
     [ApiController]
-    [Route("/posts")]
+    [Route("posts")]
     public class PostsController : ControllerBase
     {
         private readonly PostDbContext _context;
@@ -51,11 +52,8 @@ namespace PostService.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(Guid id, [FromBody] Post updatedPost)
+        public async Task<IActionResult> Update(Guid id, [FromBody] PostUpdateDTO updatedPost)
         {
-            if (id != updatedPost.Id)
-                return BadRequest();
-
             var existingPost = await _context.Posts.FindAsync(id);
             if (existingPost == null)
                 return NotFound();

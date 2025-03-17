@@ -18,12 +18,12 @@
     },
     {
       "Key": "ProfileServiceCreate",
-      "DownstreamPathTemplate": "/profiles/create",
+      "DownstreamPathTemplate": "/profiles",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         { "Host": "user-profile-service", "Port": 80 }
       ],
-      "UpstreamPathTemplate": "/api/profiles/create",
+      "UpstreamPathTemplate": "/api/profiles",
       "UpstreamHttpMethod": ["POST"]
     },
     {

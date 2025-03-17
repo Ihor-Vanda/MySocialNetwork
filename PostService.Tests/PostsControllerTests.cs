@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PostService.Controllers;
+using PostService.DTOs;
 using PostService.Models;
 
 namespace PostService.Tests;
@@ -64,7 +65,7 @@ public class PostsControllerTests
     }
 
     [Fact]
-    public async Task Update_ReturnsBadRequest_WhenIdMismatch()
+    public async Task Update_ReturnsNotFoundRequest_WhenIdMismatch()
     {
         // Arrange
         using var context = InMemoryPostDbContextFactory.GetInMemoryContext();
@@ -82,18 +83,17 @@ public class PostsControllerTests
         await context.SaveChangesAsync();
 
         // Act
-        var updatedPost = new Post
+        var updatedPost = new PostUpdateDTO
         {
-            Id = Guid.NewGuid(),
-            AuthorId = post.AuthorId,
             Title = "Updated Title",
-            Content = "Updated Content"
+            Content = "Updated Content",
+            MediaUrl = ""
         };
 
-        var result = await controller.Update(post.Id, updatedPost);
+        var result = await controller.Update(Guid.NewGuid(), updatedPost);
 
         // Assert
-        Assert.IsType<BadRequestResult>(result);
+        Assert.IsType<NotFoundResult>(result);
     }
 
     [Fact]
@@ -115,10 +115,8 @@ public class PostsControllerTests
         await context.SaveChangesAsync();
 
         // Act
-        var updatedPost = new Post
+        var updatedPost = new PostUpdateDTO
         {
-            Id = post.Id,
-            AuthorId = post.AuthorId,
             Title = "Updated Title",
             Content = "Updated Content",
             MediaUrl = "http://example.com/updated.jpg"
