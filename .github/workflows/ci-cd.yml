@@ -27,10 +27,10 @@ jobs:
 
       - name: Build Docker images for tests
         run: |
-          docker build -t mysocialnetwork-auth-service:latest ./AuthService
-          docker build -t mysocialnetwork-user-profile-service:latest ./UserProfileService
-          docker build -t mysocialnetwork-post-service:latest ./PostService
-          docker build -t mysocialnetwork-api-gateway-service:latest ./ApiGateway
+          docker build -f ./AuthService/Dockerfile -t mysocialnetwork-auth-service:latest .
+          docker build -f ./UserProfileService/Dockerfile -t mysocialnetwork-user-profile-service:latest .
+          docker build -f ./PostService/Dockerfile -t mysocialnetwork-post-service:latest .
+          docker build -f ./ApiGateway/Dockerfile -t mysocialnetwork-api-gateway-service:latest .
 
       - name: Run tests
         run: dotnet test --no-build --configuration Release --verbosity normal
