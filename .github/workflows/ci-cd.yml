@@ -8,14 +8,14 @@ on:
 
 jobs:
   build-and-test:
-    runs-on: ununtu-latest
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
 
       - name: Set up .NET
-        uses: action/setup-dotnet@v3
+        uses: actions/setup-dotnet@v3
         with:
           dotnet-version: "9.0.x"
 
@@ -33,9 +33,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: action/checkout@v3
+        uses: actions/checkout@v3
 
-      - name: build docker image
+      - name: Build Docker images
         run: |
           docker build -t my-auth-service:latest ./AuthService
           docker build -t my-user-profile-service:latest ./UserProfileService
