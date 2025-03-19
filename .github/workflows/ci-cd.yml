@@ -25,22 +25,22 @@ jobs:
       - name: Build solution
         run: dotnet build --no-restore --configuration Release
 
+      - name: Build Docker images for tests
+        run: |
+          docker build -t mysocialnetwork-auth-service:latest ./AuthService
+          docker build -t mysocialnetwork-user-profile-service:latest ./UserProfileService
+          docker build -t mysocialnetwork-post-service:latest ./PostService
+          docker build -t mysocialnetwork-api-gateway-service:latest ./ApiGateway
+
       - name: Run tests
         run: dotnet test --no-build --configuration Release --verbosity normal
 
-  build-docker:
+  push-docker:
     needs: build-and-test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-
-      - name: Build Docker images
-        run: |
-          docker build -t my-auth-service:latest ./AuthService
-          docker build -t my-user-profile-service:latest ./UserProfileService
-          docker build -t my-post-service:latest ./PostService
-          docker build -t my-api-gateway:latest ./ApiGateway
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
