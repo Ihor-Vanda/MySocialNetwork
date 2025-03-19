@@ -50,7 +50,7 @@ jobs:
 
       - name: Push Docker images
         run: |
-          docker push my-auth-service:latest
-          docker push my-user-profile-service:latest
-          docker push my-post-service:latest
-          docker push my-api-gateway:latest
+          docker push mysocialnetwork-auth-service:latest
+          docker push mysocialnetwork-user-profile-service:latest
+          docker push mysocialnetwork-post-service:latest
+          docker push mysocialnetwork-api-gateway-service:latest
