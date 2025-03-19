@@ -28,9 +28,13 @@ jobs:
       - name: Build Docker images for tests
         run: |
           docker build -f ./AuthService/Dockerfile -t mysocialnetwork-auth-service:latest .
+          docker tag mysocialnetwork-auth-service:latest ${{ secrets.DOCKER_USERNAME }}/mysocialnetwork-auth-service:latest
           docker build -f ./UserProfileService/Dockerfile -t mysocialnetwork-user-profile-service:latest .
+          docker tag mysocialnetwork-user-profile-service:latest ${{ secrets.DOCKER_USERNAME }}/mysocialnetwork-user-profile-service:latest
           docker build -f ./PostService/Dockerfile -t mysocialnetwork-post-service:latest .
+          docker tag mysocialnetwork-post-service:latest ${{ secrets.DOCKER_USERNAME }}/mysocialnetwork-post-service:latest
           docker build -f ./ApiGateway/Dockerfile -t mysocialnetwork-api-gateway-service:latest .
+          docker tag mysocialnetwork-api-gateway-service:latest ${{ secrets.DOCKER_USERNAME }}/mysocialnetwork-api-gateway-service:latest
 
       - name: Run tests
         run: dotnet test --no-build --configuration Release --verbosity normal
