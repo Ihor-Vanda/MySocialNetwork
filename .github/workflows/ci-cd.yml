@@ -32,7 +32,9 @@ jobs:
           docker build -f ./PostService/Dockerfile -t ${{ secrets.DOCKER_USERNAME }}/mysocialnetwork-post-service:latest .
           docker build -f ./ApiGateway/Dockerfile -t ${{ secrets.DOCKER_USERNAME }}/mysocialnetwork-api-gateway-service:latest .
       - name: Run tests
-        run: dotnet test --no-build --configuration Release --verbosity normal
+        run: |
+          set MySecrets:DockerHubUsernameLocal=${{ secrets.DOCKER_USERNAME }}
+          dotnet test --no-build --configuration Release --verbosity normal
 
   push-docker:
     needs: build-and-test
