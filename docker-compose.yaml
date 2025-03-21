@@ -1,5 +1,5 @@
 services:
-  api-gateway-service:
+  api:
     build:
       context: .
       dockerfile: ApiGateway/Dockerfile
@@ -8,10 +8,11 @@ services:
     environment:
       - ASPNETCORE_URLS=http://+:80
     depends_on:
-      sql-server:
+      db:
         condition: service_healthy
+    image: "${DOCKER_HUB_USERNAME}/mysocialnetwork-api-gateway-service:latest"
 
-  auth-service:
+  auth:
     build:
       context: .
       dockerfile: AuthService/Dockerfile
@@ -20,10 +21,11 @@ services:
     environment:
       - ASPNETCORE_URLS=http://+:80
     depends_on:
-      sql-server:
+      db:
         condition: service_healthy
+    image: "${DOCKER_HUB_USERNAME}/mysocialnetwork-auth-service:latest"
 
-  user-profile-service:
+  user:
     build:
       context: .
       dockerfile: UserProfileService/Dockerfile
@@ -32,10 +34,11 @@ services:
     environment:
       - ASPNETCORE_URLS=http://+:80
     depends_on:
-      sql-server:
+      db:
         condition: service_healthy
+    image: "${DOCKER_HUB_USERNAME}/mysocialnetwork-user-profile-service:latest"
 
-  post-service:
+  post:
     build:
       context: .
       dockerfile: PostService/Dockerfile
@@ -44,10 +47,11 @@ services:
     environment:
       - ASPNETCORE_URLS=http://+:80
     depends_on:
-      sql-server:
+      db:
         condition: service_healthy
+    image: "${DOCKER_HUB_USERNAME}/mysocialnetwork-post-service:latest"
 
-  sql-server:
+  db:
     image: mcr.microsoft.com/mssql/server:2019-latest
     environment:
       SA_PASSWORD: "Str0ngPass123!"
@@ -60,13 +64,15 @@ services:
       start_period: 10s
     ports:
       - "1433:1433"
+    volumes:
+      - sql_data:/var/opt/mssql/data
 
   adminer:
     image: adminer
     ports:
       - "8080:8080"
     depends_on:
-      - sql-server
+      - db
 
 volumes:
   sql_data:

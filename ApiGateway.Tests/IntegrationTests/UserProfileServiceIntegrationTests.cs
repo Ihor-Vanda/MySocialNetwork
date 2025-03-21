@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using System.Net;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
@@ -7,8 +8,8 @@ using Xunit;
 
 namespace ApiGateway.Tests.IntegrationTests
 {
-    [Collection("Docker Network Collection")]
-    public class UserProfileServiceIntegrationTests : IClassFixture<ContainerFixture>, IClassFixture<SharedNetworkFixture>
+    [Collection("Docker Collection")]
+    public class UserProfileServiceIntegrationTests : IClassFixture<ContainerFixture>
     {
         private readonly HttpClient _client;
 

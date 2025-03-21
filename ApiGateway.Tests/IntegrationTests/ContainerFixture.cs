@@ -1,79 +1,98 @@
 using System;
 using System.Net.Http;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using DotNet.Testcontainers.Builders;
 using DotNet.Testcontainers.Containers;
 using DotNet.Testcontainers.Networks;
+using Microsoft.Extensions.Configuration;
+using Xunit;
 
 namespace ApiGateway.Tests.IntegrationTests
 {
-    [Collection("Docker Network Collection")]
     public class ContainerFixture : IAsyncLifetime
     {
+        private readonly INetwork _network;
         private readonly IContainer _sqlServer;
         private readonly IContainer _authService;
         private readonly IContainer _userProfileService;
         private readonly IContainer _postsService;
         private readonly IContainer _apiGateway;
+        private readonly string _dockerHubUsername;
+
         public HttpClient HttpClient { get; private set; } = default!;
 
-        public ContainerFixture(SharedNetworkFixture networkFixture)
+        public ContainerFixture()
         {
-            var _networkName = networkFixture.NetworkName;
+            var configBuilder = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .AddJsonFile("appsettings.Development.json", optional: true, reloadOnChange: true)
+                .AddEnvironmentVariables()
+                .AddUserSecrets<ContainerFixture>();
+            var configuration = configBuilder.Build();
+
+            _dockerHubUsername = configuration["MySecrets:DockerHubUsernameLocal"];
+            if (string.IsNullOrWhiteSpace(_dockerHubUsername))
+            {
+                throw new ArgumentException("DockerHubUsernameLocal is not configured properly.");
+            }
+
+            var _networkName = "integration-tests" + Guid.NewGuid();
+            _network = new NetworkBuilder()
+            .WithName(_networkName)
+            .Build();
 
             // SQL Server
             _sqlServer = new ContainerBuilder()
                 .WithImage("mcr.microsoft.com/mssql/server:2019-latest")
                 .WithEnvironment("ACCEPT_EULA", "Y")
-                .WithEnvironment("SA_PASSWORD", "Str0ngPass123!")
+                .WithEnvironment("SA_PASSWORD", configuration["SqlServer:Password"] ?? "Str0ngPass123!")
                 .WithPortBinding(1433, true)
                 .WithNetwork(_networkName)
-                .WithNetworkAliases("sql-server")
+                .WithNetworkAliases("db")
                 .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(1433))
                 .Build();
 
             // AuthService
             _authService = new ContainerBuilder()
-                .WithImage("mysocialnetwork-auth-service:latest")
+                .WithImage($"{_dockerHubUsername}/mysocialnetwork-auth-service:latest")
                 .WithPortBinding(80, true)
                 .WithNetwork(_networkName)
-                .WithNetworkAliases("auth-service")
+                .WithNetworkAliases("auth")
                 .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(80))
                 .Build();
 
             // UserProfileService
             _userProfileService = new ContainerBuilder()
-                .WithImage("mysocialnetwork-user-profile-service:latest")
+                .WithImage($"{_dockerHubUsername}/mysocialnetwork-user-profile-service:latest")
                 .WithPortBinding(80, true)
                 .WithNetwork(_networkName)
-                .WithNetworkAliases("user-profile-service")
+                .WithNetworkAliases("user")
                 .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(80))
                 .Build();
 
             // PostsService
             _postsService = new ContainerBuilder()
-                .WithImage("mysocialnetwork-post-service:latest")
+                .WithImage($"{_dockerHubUsername}/mysocialnetwork-post-service:latest")
                 .WithPortBinding(80, true)
                 .WithNetwork(_networkName)
-                .WithNetworkAliases("post-service")
+                .WithNetworkAliases("post")
                 .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(80))
                 .Build();
 
-            // ApiGateway 
+            // ApiGateway
             _apiGateway = new ContainerBuilder()
-                .WithImage("mysocialnetwork-api-gateway-service:latest")
+                .WithImage($"{_dockerHubUsername}/mysocialnetwork-api-gateway-service:latest")
                 .WithPortBinding(80, true)
                 .WithNetwork(_networkName)
-                .WithNetworkAliases("api-gateway-service")
+                .WithNetworkAliases("api")
                 .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(80))
                 .Build();
         }
 
         public async Task InitializeAsync()
         {
+            await _network.CreateAsync();
             await _sqlServer.StartAsync();
-
             await _authService.StartAsync();
             await _userProfileService.StartAsync();
             await _postsService.StartAsync();
@@ -94,6 +113,7 @@ namespace ApiGateway.Tests.IntegrationTests
             await _postsService.StopAsync();
             await _authService.StopAsync();
             await _sqlServer.StopAsync();
+            await _network.DeleteAsync();
         }
     }
 }

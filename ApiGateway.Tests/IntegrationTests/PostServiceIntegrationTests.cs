@@ -7,8 +7,8 @@ using Xunit;
 
 namespace ApiGateway.Tests.IntegrationTests
 {
-    [Collection("Docker Network Collection")]
-    public class PostServiceIntegrationTests : IClassFixture<ContainerFixture>, IClassFixture<SharedNetworkFixture>
+    [Collection("Docker Collection")]
+    public class PostServiceIntegrationTests : IClassFixture<ContainerFixture>
     {
         private readonly HttpClient _client;
 

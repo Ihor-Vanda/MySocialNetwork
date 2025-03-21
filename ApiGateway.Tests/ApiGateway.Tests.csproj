@@ -11,6 +11,7 @@
     
     <PreserveCompilationContext>true</PreserveCompilationContext>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <UserSecretsId>d4556682-03cb-49b3-aa8c-f4845308ddbe</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>

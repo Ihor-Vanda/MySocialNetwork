@@ -4,7 +4,7 @@
       "Key": "AuthServiceRegister",
       "DownstreamPathTemplate": "/auth/register",
       "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [{ "Host": "auth-service", "Port": 80 }],
+      "DownstreamHostAndPorts": [{ "Host": "auth", "Port": 80 }],
       "UpstreamPathTemplate": "/api/auth/register",
       "UpstreamHttpMethod": ["POST"]
     },
@@ -12,7 +12,7 @@
       "Key": "AuthServiceLogin",
       "DownstreamPathTemplate": "/auth/login",
       "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [{ "Host": "auth-service", "Port": 80 }],
+      "DownstreamHostAndPorts": [{ "Host": "auth", "Port": 80 }],
       "UpstreamPathTemplate": "/api/auth/login",
       "UpstreamHttpMethod": ["POST"]
     },
@@ -20,9 +20,7 @@
       "Key": "ProfileServiceCreate",
       "DownstreamPathTemplate": "/profiles",
       "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
-        { "Host": "user-profile-service", "Port": 80 }
-      ],
+      "DownstreamHostAndPorts": [{ "Host": "user", "Port": 80 }],
       "UpstreamPathTemplate": "/api/profiles",
       "UpstreamHttpMethod": ["POST"]
     },
@@ -30,9 +28,7 @@
       "Key": "ProfileServiceGet",
       "DownstreamPathTemplate": "/profiles/{id}",
       "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
-        { "Host": "user-profile-service", "Port": 80 }
-      ],
+      "DownstreamHostAndPorts": [{ "Host": "user", "Port": 80 }],
       "UpstreamPathTemplate": "/api/profiles/{id}",
       "UpstreamHttpMethod": ["GET"]
     },
@@ -40,9 +36,7 @@
       "Key": "ProfileServiceUpdate",
       "DownstreamPathTemplate": "/profiles/{id}",
       "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
-        { "Host": "user-profile-service", "Port": 80 }
-      ],
+      "DownstreamHostAndPorts": [{ "Host": "user", "Port": 80 }],
       "UpstreamPathTemplate": "/api/profiles/{id}",
       "UpstreamHttpMethod": ["PUT"]
     },
@@ -50,9 +44,7 @@
       "Key": "ProfileServiceDelete",
       "DownstreamPathTemplate": "/profiles/{id}",
       "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
-        { "Host": "user-profile-service", "Port": 80 }
-      ],
+      "DownstreamHostAndPorts": [{ "Host": "user", "Port": 80 }],
       "UpstreamPathTemplate": "/api/profiles/{id}",
       "UpstreamHttpMethod": ["DELETE"]
     },
@@ -60,7 +52,7 @@
       "Key": "PostServiceList",
       "DownstreamPathTemplate": "/posts",
       "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [{ "Host": "post-service", "Port": 80 }],
+      "DownstreamHostAndPorts": [{ "Host": "post", "Port": 80 }],
       "UpstreamPathTemplate": "/api/posts",
       "UpstreamHttpMethod": ["GET"]
     },
@@ -68,7 +60,7 @@
       "Key": "PostServiceGet",
       "DownstreamPathTemplate": "/posts/{id}",
       "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [{ "Host": "post-service", "Port": 80 }],
+      "DownstreamHostAndPorts": [{ "Host": "post", "Port": 80 }],
       "UpstreamPathTemplate": "/api/posts/{id}",
       "UpstreamHttpMethod": ["GET"]
     },
@@ -76,7 +68,7 @@
       "Key": "PostServiceCreate",
       "DownstreamPathTemplate": "/posts",
       "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [{ "Host": "post-service", "Port": 80 }],
+      "DownstreamHostAndPorts": [{ "Host": "post", "Port": 80 }],
       "UpstreamPathTemplate": "/api/posts",
       "UpstreamHttpMethod": ["POST"]
     },
@@ -84,7 +76,7 @@
       "Key": "PostServiceUpdate",
       "DownstreamPathTemplate": "/posts/{id}",
       "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [{ "Host": "post-service", "Port": 80 }],
+      "DownstreamHostAndPorts": [{ "Host": "post", "Port": 80 }],
       "UpstreamPathTemplate": "/api/posts/{id}",
       "UpstreamHttpMethod": ["PUT"]
     },
@@ -92,7 +84,7 @@
       "Key": "PostServiceDelete",
       "DownstreamPathTemplate": "/posts/{id}",
       "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [{ "Host": "post-service", "Port": 80 }],
+      "DownstreamHostAndPorts": [{ "Host": "post", "Port": 80 }],
       "UpstreamPathTemplate": "/api/posts/{id}",
       "UpstreamHttpMethod": ["DELETE"]
     }
