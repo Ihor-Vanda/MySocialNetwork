@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      MySecrets__DockerHubUsernameLocal: ${{ secrets.DOCKER_USERNAME}}
+      MySecrets__DockerHubUsernameLocal: ${{ secrets.DOCKER_USERNAME }}
 
     steps:
       - name: Checkout repository
@@ -30,14 +30,13 @@ jobs:
 
       - name: Build Docker images for tests
         run: |
-          docker build -f ./AuthService/Dockerfile -t ${{ secrets.DOCKER_USERNAME}}/mysocialnetwork-auth-service:latest .
+          docker build -f ./AuthService/Dockerfile -t ${{ secrets.DOCKER_USERNAME }}/mysocialnetwork-auth-service:latest .
           docker build -f ./UserProfileService/Dockerfile -t ${{ secrets.DOCKER_USERNAME }}/mysocialnetwork-user-profile-service:latest .
           docker build -f ./PostService/Dockerfile -t ${{ secrets.DOCKER_USERNAME }}/mysocialnetwork-post-service:latest .
           docker build -f ./ApiGateway/Dockerfile -t ${{ secrets.DOCKER_USERNAME }}/mysocialnetwork-api-gateway-service:latest .
+
       - name: Run tests
-        run: |
-          set MySecrets:DockerHubUsernameLocal=${{ secrets.DOCKER_USERNAME }}
-          dotnet test --no-build --configuration Release --verbosity normal
+        run: dotnet test --no-build --configuration Release --verbosity normal
 
   push-docker:
     needs: build-and-test
