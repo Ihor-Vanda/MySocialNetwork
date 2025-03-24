@@ -10,6 +10,9 @@ jobs:
   build-and-test:
     runs-on: ubuntu-latest
 
+    env:
+      MySecrets__DockerHubUsernameLocal: ${{ secrets.DOCKER_USERNAME}}
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
