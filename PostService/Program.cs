@@ -19,6 +19,9 @@ builder.Host.UseSerilog();
 builder.Services.AddDbContext<PostDbContext>(option =>
     option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+builder.Services.AddHealthChecks()
+    .AddDbContextCheck<PostDbContext>();
+
 builder.Services.AddControllers();
 
 var app = builder.Build();
@@ -39,5 +42,6 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+app.MapHealthChecks("/health");
 
 app.Run();

@@ -4,6 +4,8 @@ WORKDIR /app
 EXPOSE 80
 EXPOSE 443
 
+RUN apt-get update && apt-get install -y curl --no-install-recommends && rm -rf /var/lib/apt/lists/*
+
 # Образ для збірки проекту
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /src

@@ -8,8 +8,18 @@ services:
     environment:
       - ASPNETCORE_URLS=http://+:80
     depends_on:
-      db:
+      auth:
         condition: service_healthy
+      user:
+        condition: service_healthy
+      post:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8181/health"]
+      interval: 60s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
     image: "${DOCKER_HUB_USERNAME}/mysocialnetwork-api-gateway-service:latest"
 
   auth:
@@ -23,6 +33,12 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/health"]
+      interval: 60s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
     image: "${DOCKER_HUB_USERNAME}/mysocialnetwork-auth-service:latest"
 
   user:
@@ -36,6 +52,12 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/health"]
+      interval: 60s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
     image: "${DOCKER_HUB_USERNAME}/mysocialnetwork-user-profile-service:latest"
 
   post:
@@ -49,6 +71,12 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/health"]
+      interval: 60s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
     image: "${DOCKER_HUB_USERNAME}/mysocialnetwork-post-service:latest"
 
   db:
@@ -58,7 +86,7 @@ services:
       ACCEPT_EULA: "Y"
     healthcheck:
       test: /opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P "Str0ngPass123!" -Q "SELECT 1" || exit 1
-      interval: 10s
+      interval: 60s
       timeout: 3s
       retries: 10
       start_period: 10s

@@ -22,6 +22,9 @@ builder.Host.UseSerilog();
 builder.Services.AddDbContext<UserProfileDbContext>(option =>
     option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+builder.Services.AddHealthChecks()
+    .AddDbContextCheck<UserProfileDbContext>();
+
 builder.Services.AddControllers();
 
 var app = builder.Build();
@@ -42,5 +45,6 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+app.MapHealthChecks("/health");
 
 app.Run();

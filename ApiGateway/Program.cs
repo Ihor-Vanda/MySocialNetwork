@@ -1,3 +1,4 @@
+using ApiGateway.HealthChecks;
 using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
 using Serilog;
@@ -5,7 +6,6 @@ using Serilog;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
 Log.Logger = new LoggerConfiguration()
@@ -20,14 +20,36 @@ builder.Services
     .AddOcelot(builder.Configuration)
     .AddSingletonDefinedAggregator<RegisterAggregator>();
 
+builder.Services.AddHttpClient("DownstreamClient");
+builder.Services.AddHealthChecks()
+    .AddCheck<DownstreamHealthCheck>("Downstream Health Check");
+
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.ListenAnyIP(80);
+    options.ListenAnyIP(8181);
+});
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
 
-app.UseOcelot().Wait();
+// app.MapHealthChecks("/health");
 
+app.UseRouting();
+
+app.MapWhen(ctx => ctx.Connection.LocalPort == 8181, appBuilder =>
+{
+    appBuilder.UseRouting();
+
+    appBuilder.UseEndpoints(endpoints =>
+    {
+        endpoints.MapHealthChecks("/health");
+    });
+});
+
+await app.UseOcelot();
 app.Run();
