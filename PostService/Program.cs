@@ -1,3 +1,4 @@
+using ApiGateway;
 using Microsoft.EntityFrameworkCore;
 using PostService.Repo;
 using Serilog;
@@ -12,6 +13,11 @@ builder.Services.AddOpenApi();
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
     .WriteTo.File("Logs/log.txt", rollingInterval: RollingInterval.Day)
+    .WriteTo.Elasticsearch(new Serilog.Sinks.Elasticsearch.ElasticsearchSinkOptions(new Uri("http://elasticsearch:9200"))
+    {
+        AutoRegisterTemplate = true,
+        IndexFormat = "myapp-logs-{0:yyyy:MM:dd}"
+    })
     .CreateLogger();
 
 builder.Host.UseSerilog();
@@ -37,6 +43,8 @@ if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
+
+app.UseMiddleware<CorrelationIdMiddleware>(args);
 
 app.UseHttpsRedirection();
 app.UseAuthentication();

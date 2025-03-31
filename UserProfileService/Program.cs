@@ -1,4 +1,5 @@
 using System.Text;
+using ApiGateway;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -15,6 +16,11 @@ builder.Services.AddOpenApi();
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
     .WriteTo.File("Logs/log.txt", rollingInterval: RollingInterval.Day)
+    .WriteTo.Elasticsearch(new Serilog.Sinks.Elasticsearch.ElasticsearchSinkOptions(new Uri("http://elasticsearch:9200"))
+    {
+        AutoRegisterTemplate = true,
+        IndexFormat = "myapp-logs-{0:yyyy:MM:dd}"
+    })
     .CreateLogger();
 
 builder.Host.UseSerilog();
@@ -40,6 +46,8 @@ if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
+
+app.UseMiddleware<CorrelationIdMiddleware>();
 
 app.UseHttpsRedirection();
 app.UseAuthentication();

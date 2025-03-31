@@ -1,3 +1,4 @@
+using ApiGateway;
 using ApiGateway.HealthChecks;
 using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
@@ -9,8 +10,14 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddOpenApi();
 
 Log.Logger = new LoggerConfiguration()
+    .Enrich.FromLogContext()
     .WriteTo.Console()
     .WriteTo.File("Logs/log.txt", rollingInterval: RollingInterval.Day)
+    .WriteTo.Elasticsearch(new Serilog.Sinks.Elasticsearch.ElasticsearchSinkOptions(new Uri("http://elasticsearch:9200"))
+    {
+        AutoRegisterTemplate = true,
+        IndexFormat = "myapp-logs-{0:yyyy:MM:dd}"
+    })
     .CreateLogger();
 
 builder.Configuration
@@ -36,6 +43,8 @@ if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
+
+app.UseMiddleware<CorrelationIdMiddleware>();
 
 // app.MapHealthChecks("/health");
 

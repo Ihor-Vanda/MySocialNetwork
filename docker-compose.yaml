@@ -95,6 +95,29 @@ services:
     volumes:
       - sql_data:/var/opt/mssql/data
 
+  elasticsearch:
+    image: elasticsearch:8.17.4
+    environment:
+      - discovery.type=single-node
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+
+  kibana:
+    image: kibana:8.17.4
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    ports:
+      - "5601:5601"
+    depends_on:
+      - elasticsearch
+
+  brocker:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
   adminer:
     image: adminer
     ports:
