@@ -7,12 +7,28 @@ using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using Microsoft.Extensions.DependencyInjection;
 using ApiGateway;
+using MassTransit;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+
+var configBuilder = new ConfigurationBuilder()
+    .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+    .AddJsonFile("appsettings.Development.json", optional: true, reloadOnChange: true)
+    .AddEnvironmentVariables();
+
+var configuration = configBuilder.Build();
+
+var rabbitMqHost = configuration["RABBITMQ_HOST"];
+var rabbitMqUsername = configuration["RABBITMQ_USERNAME"];
+var rabbitMqPassword = configuration["RABBITMQ_PASSWORD"];
+if (string.IsNullOrWhiteSpace(rabbitMqHost) || string.IsNullOrWhiteSpace(rabbitMqUsername) || string.IsNullOrWhiteSpace(rabbitMqPassword))
+{
+    throw new ArgumentException("RabbitMq connection is not configured properly.");
+}
 
 // Serilog
 Log.Logger = new LoggerConfiguration()
@@ -57,6 +73,18 @@ builder.Services.AddAuthentication(options =>
         ValidateAudience = false,
         ClockSkew = TimeSpan.Zero
     };
+});
+
+builder.Services.AddMassTransit(x =>
+{
+    x.UsingRabbitMq((context, cfg) =>
+    {
+        cfg.Host(rabbitMqHost, "/", h =>
+        {
+            h.Username(rabbitMqUsername);
+            h.Password(rabbitMqPassword);
+        });
+    });
 });
 
 builder.Services.AddControllers();

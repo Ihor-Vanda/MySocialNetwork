@@ -6,6 +6,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using AuthService.Models;
+using MassTransit;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -19,14 +20,17 @@ namespace AuthService.Controllers
         private readonly UserManager<IdentityUser> _userManager;
         private readonly SignInManager<IdentityUser> _signInManager;
         protected readonly IConfiguration _configuration;
+        private readonly IBus _bus;
 
         public AuthController(UserManager<IdentityUser> userManager,
                                 SignInManager<IdentityUser> signInManager,
-                                IConfiguration configuration)
+                                IConfiguration configuration,
+                                IBus bus)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _configuration = configuration;
+            _bus = bus;
         }
 
         [HttpPost("register")]
@@ -42,6 +46,13 @@ namespace AuthService.Controllers
 
             if (result.Succeeded)
             {
+                await _bus.Publish(new UserCreatedEvent
+                {
+                    UserId = Guid.Parse(user.Id),
+                    Email = user.Email,
+                    Name = user.UserName
+                });
+
                 return CreatedAtAction(nameof(Register), new { id = model.Id }, model);
             }
 
@@ -68,7 +79,6 @@ namespace AuthService.Controllers
                 return Unauthorized(new { Message = "Invalid credentials" });
             }
 
-            // Створення JWT токена
             var tokenHandler = new JwtSecurityTokenHandler();
             var secret = _configuration["Jwt:SecretKey"] ?? throw new Exception("Jwt secret key is not configured");
             var key = Encoding.ASCII.GetBytes(secret);
