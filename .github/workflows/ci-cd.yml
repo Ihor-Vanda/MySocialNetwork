@@ -11,7 +11,11 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      MySecrets__DockerHubUsernameLocal: ${{ secrets.DOCKER_USERNAME }}
+      DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      SQL_SERVER_PASSWORD: ${{ secrets.SQL_SERVER_PASSWORD }}
+      RABBITMQ_HOST: ${{secrets.RABBITMQ_HOST}}
+      RABBITMQ_USERNAME: ${{secrets.RABBITMQ_USERNAME}}
+      RABBITMQ_PASSWORD: ${{secrets.RABBITMQ_PASSWORD}}
 
     steps:
       - name: Checkout repository
