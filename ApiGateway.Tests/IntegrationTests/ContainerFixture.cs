@@ -49,7 +49,7 @@ namespace ApiGateway.Tests.IntegrationTests
                 .WithImage("rabbitmq:3-management")
                 .WithPortBinding(5672, true)
                 .WithNetwork(_networkName)
-                .WithNetworkAliases("broker")
+                .WithNetworkAliases(Environment.GetEnvironmentVariable("RABBITMQ_HOST"))
                 .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(5672))
                 .Build();
 
