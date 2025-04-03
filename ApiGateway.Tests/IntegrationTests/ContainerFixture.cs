@@ -3,10 +3,13 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using dotenv.net;
 using DotNet.Testcontainers.Builders;
+using DotNet.Testcontainers;
 using DotNet.Testcontainers.Containers;
 using DotNet.Testcontainers.Networks;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Xunit;
+using DotNet.Testcontainers.Configurations;
 
 namespace ApiGateway.Tests.IntegrationTests
 {
@@ -33,6 +36,13 @@ namespace ApiGateway.Tests.IntegrationTests
             .WithName(_networkName)
             .Build();
 
+            var loggerFactory = LoggerFactory.Create(builder =>
+                {
+                    builder.AddConsole();
+                    builder.SetMinimumLevel(LogLevel.Debug);
+                });
+            var logger = loggerFactory.CreateLogger("Testcontainers");
+
             // SQL Server
             _sqlServer = new ContainerBuilder()
                 .WithImage("mcr.microsoft.com/mssql/server:2022-latest")
@@ -40,6 +50,7 @@ namespace ApiGateway.Tests.IntegrationTests
                 .WithEnvironment("SA_PASSWORD", Environment.GetEnvironmentVariable("SQL_SERVER_PASSWORD"))
                 .WithPortBinding(1433, true)
                 .WithNetwork(_networkName)
+                .WithLogger(logger)
                 .WithNetworkAliases("db")
                 .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(1433))
                 .Build();
@@ -49,6 +60,7 @@ namespace ApiGateway.Tests.IntegrationTests
                 .WithImage("rabbitmq:3-management")
                 .WithPortBinding(5672, true)
                 .WithNetwork(_networkName)
+                .WithLogger(logger)
                 .WithNetworkAliases(Environment.GetEnvironmentVariable("RABBITMQ_HOST"))
                 .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(5672))
                 .Build();
@@ -58,6 +70,7 @@ namespace ApiGateway.Tests.IntegrationTests
                 .WithImage($"{dockerHubUsername}/mysocialnetwork-auth-service:latest")
                 .WithPortBinding(80, true)
                 .WithNetwork(_networkName)
+                .WithLogger(logger)
                 .WithNetworkAliases("auth")
                 .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(80)).DependsOn(_sqlServer).DependsOn(_broker)
                 .Build();
@@ -67,6 +80,7 @@ namespace ApiGateway.Tests.IntegrationTests
                 .WithImage($"{dockerHubUsername}/mysocialnetwork-user-profile-service:latest")
                 .WithPortBinding(80, true)
                 .WithNetwork(_networkName)
+                .WithLogger(logger)
                 .WithNetworkAliases("user")
                 .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(80)).DependsOn(_sqlServer).DependsOn(_broker)
                 .Build();
@@ -76,6 +90,7 @@ namespace ApiGateway.Tests.IntegrationTests
                 .WithImage($"{dockerHubUsername}/mysocialnetwork-post-service:latest")
                 .WithPortBinding(80, true)
                 .WithNetwork(_networkName)
+                .WithLogger(logger)
                 .WithNetworkAliases("post")
                 .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(80)).DependsOn(_sqlServer).DependsOn(_broker)
                 .Build();
@@ -85,6 +100,7 @@ namespace ApiGateway.Tests.IntegrationTests
                 .WithImage($"{dockerHubUsername}/mysocialnetwork-api-gateway-service:latest")
                 .WithPortBinding(80, true)
                 .WithNetwork(_networkName)
+                .WithLogger(logger)
                 .WithNetworkAliases("api")
                 .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(80)).DependsOn(_authService).DependsOn(_userProfileService).DependsOn(_postsService)
                 .Build();
