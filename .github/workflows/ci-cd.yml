@@ -11,6 +11,13 @@ jobs:
     environment: dev
     runs-on: ubuntu-latest
 
+    env:
+      DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      SQL_SERVER_PASSWORD: ${{ secrets.SQL_SERVER_PASSWORD }}
+      RABBITMQ_HOST: ${{secrets.RABBITMQ_HOST}}
+      RABBITMQ_USERNAME: ${{secrets.RABBITMQ_USERNAME}}
+      RABBITMQ_PASSWORD: ${{secrets.RABBITMQ_PASSWORD}}
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
