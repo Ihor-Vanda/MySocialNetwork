@@ -1,6 +1,7 @@
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
+using dotenv.net;
 using DotNet.Testcontainers.Builders;
 using DotNet.Testcontainers.Containers;
 using DotNet.Testcontainers.Networks;
@@ -17,24 +18,15 @@ namespace ApiGateway.Tests.IntegrationTests
         private readonly IContainer _userProfileService;
         private readonly IContainer _postsService;
         private readonly IContainer _apiGateway;
-        private readonly string _dockerHubUsername;
+        private readonly IContainer _broker;
 
         public HttpClient HttpClient { get; private set; } = default!;
 
         public ContainerFixture()
         {
-            var configBuilder = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddJsonFile("appsettings.Development.json", optional: true, reloadOnChange: true)
-                .AddEnvironmentVariables()
-                .AddUserSecrets<ContainerFixture>();
-            var configuration = configBuilder.Build();
+            DotEnv.Load();
 
-            _dockerHubUsername = configuration["MySecrets:DockerHubUsernameLocal"];
-            if (string.IsNullOrWhiteSpace(_dockerHubUsername))
-            {
-                throw new ArgumentException("DockerHubUsernameLocal is not configured properly.");
-            }
+            var dockerHubUsername = Environment.GetEnvironmentVariable("DOCKER_HUB_USERNAME") ?? throw new ArgumentException("DOCKER_HUB_USERNAME is not configured properly.");
 
             var _networkName = "integration-tests" + Guid.NewGuid();
             _network = new NetworkBuilder()
@@ -43,18 +35,27 @@ namespace ApiGateway.Tests.IntegrationTests
 
             // SQL Server
             _sqlServer = new ContainerBuilder()
-                .WithImage("mcr.microsoft.com/mssql/server:2019-latest")
+                .WithImage("mcr.microsoft.com/mssql/server:2022-latest")
                 .WithEnvironment("ACCEPT_EULA", "Y")
-                .WithEnvironment("SA_PASSWORD", configuration["SqlServer:Password"] ?? "Str0ngPass123!")
+                .WithEnvironment("SA_PASSWORD", Environment.GetEnvironmentVariable("SQL_SERVER_PASSWORD"))
                 .WithPortBinding(1433, true)
                 .WithNetwork(_networkName)
                 .WithNetworkAliases("db")
                 .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(1433))
                 .Build();
 
+            // RabbitMQ
+            _broker = new ContainerBuilder()
+                .WithImage("rabbitmq:3-management")
+                .WithPortBinding(5672, true)
+                .WithNetwork(_networkName)
+                .WithNetworkAliases("broker")
+                .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(5672))
+                .Build();
+
             // AuthService
             _authService = new ContainerBuilder()
-                .WithImage($"{_dockerHubUsername}/mysocialnetwork-auth-service:latest")
+                .WithImage($"{dockerHubUsername}/mysocialnetwork-auth-service:latest")
                 .WithPortBinding(80, true)
                 .WithNetwork(_networkName)
                 .WithNetworkAliases("auth")
@@ -63,7 +64,7 @@ namespace ApiGateway.Tests.IntegrationTests
 
             // UserProfileService
             _userProfileService = new ContainerBuilder()
-                .WithImage($"{_dockerHubUsername}/mysocialnetwork-user-profile-service:latest")
+                .WithImage($"{dockerHubUsername}/mysocialnetwork-user-profile-service:latest")
                 .WithPortBinding(80, true)
                 .WithNetwork(_networkName)
                 .WithNetworkAliases("user")
@@ -72,7 +73,7 @@ namespace ApiGateway.Tests.IntegrationTests
 
             // PostsService
             _postsService = new ContainerBuilder()
-                .WithImage($"{_dockerHubUsername}/mysocialnetwork-post-service:latest")
+                .WithImage($"{dockerHubUsername}/mysocialnetwork-post-service:latest")
                 .WithPortBinding(80, true)
                 .WithNetwork(_networkName)
                 .WithNetworkAliases("post")
@@ -81,7 +82,7 @@ namespace ApiGateway.Tests.IntegrationTests
 
             // ApiGateway
             _apiGateway = new ContainerBuilder()
-                .WithImage($"{_dockerHubUsername}/mysocialnetwork-api-gateway-service:latest")
+                .WithImage($"{dockerHubUsername}/mysocialnetwork-api-gateway-service:latest")
                 .WithPortBinding(80, true)
                 .WithNetwork(_networkName)
                 .WithNetworkAliases("api")
@@ -93,6 +94,7 @@ namespace ApiGateway.Tests.IntegrationTests
         {
             await _network.CreateAsync();
             await _sqlServer.StartAsync();
+            await _broker.StartAsync();
             await _authService.StartAsync();
             await _userProfileService.StartAsync();
             await _postsService.StartAsync();
@@ -113,6 +115,7 @@ namespace ApiGateway.Tests.IntegrationTests
             await _postsService.StopAsync();
             await _authService.StopAsync();
             await _sqlServer.StopAsync();
+            await _broker.StopAsync();
             await _network.DeleteAsync();
         }
     }

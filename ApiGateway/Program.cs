@@ -1,13 +1,17 @@
 using ApiGateway;
 using ApiGateway.HealthChecks;
+using dotenv.net;
 using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
 using Serilog;
+using dotenv;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddOpenApi();
+
+DotEnv.Load();
 
 Log.Logger = new LoggerConfiguration()
     .Enrich.FromLogContext()

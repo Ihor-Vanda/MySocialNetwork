@@ -1,5 +1,7 @@
 using System.Text;
 using ApiGateway;
+using dotenv.net;
+using MassTransit;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -11,6 +13,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+
+DotEnv.Load();
 
 // Serilog 
 Log.Logger = new LoggerConfiguration()
@@ -25,11 +29,31 @@ Log.Logger = new LoggerConfiguration()
 
 builder.Host.UseSerilog();
 
+var rabbitMqHost = Environment.GetEnvironmentVariable("RABBITMQ_HOST");
+var rabbitMqUsername = Environment.GetEnvironmentVariable("RABBITMQ_USERNAME");
+var rabbitMqPassword = Environment.GetEnvironmentVariable("RABBITMQ_PASSWORD");
+if (string.IsNullOrWhiteSpace(rabbitMqHost) || string.IsNullOrWhiteSpace(rabbitMqUsername) || string.IsNullOrWhiteSpace(rabbitMqPassword))
+{
+    throw new ArgumentException("RabbitMq connection is not configured properly.");
+}
+
 builder.Services.AddDbContext<UserProfileDbContext>(option =>
     option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddHealthChecks()
     .AddDbContextCheck<UserProfileDbContext>();
+
+builder.Services.AddMassTransit(x =>
+{
+    x.UsingRabbitMq((context, cfg) =>
+    {
+        cfg.Host(rabbitMqHost, "/", h =>
+        {
+            h.Username(rabbitMqUsername);
+            h.Password(rabbitMqPassword);
+        });
+    });
+});
 
 builder.Services.AddControllers();
 
