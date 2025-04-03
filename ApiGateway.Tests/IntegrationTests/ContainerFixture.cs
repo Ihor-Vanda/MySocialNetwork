@@ -59,7 +59,7 @@ namespace ApiGateway.Tests.IntegrationTests
                 .WithPortBinding(80, true)
                 .WithNetwork(_networkName)
                 .WithNetworkAliases("auth")
-                .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(80))
+                .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(80)).DependsOn(_sqlServer).DependsOn(_broker)
                 .Build();
 
             // UserProfileService
@@ -68,7 +68,7 @@ namespace ApiGateway.Tests.IntegrationTests
                 .WithPortBinding(80, true)
                 .WithNetwork(_networkName)
                 .WithNetworkAliases("user")
-                .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(80))
+                .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(80)).DependsOn(_sqlServer).DependsOn(_broker)
                 .Build();
 
             // PostsService
@@ -77,7 +77,7 @@ namespace ApiGateway.Tests.IntegrationTests
                 .WithPortBinding(80, true)
                 .WithNetwork(_networkName)
                 .WithNetworkAliases("post")
-                .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(80))
+                .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(80)).DependsOn(_sqlServer).DependsOn(_broker)
                 .Build();
 
             // ApiGateway
@@ -86,7 +86,7 @@ namespace ApiGateway.Tests.IntegrationTests
                 .WithPortBinding(80, true)
                 .WithNetwork(_networkName)
                 .WithNetworkAliases("api")
-                .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(80))
+                .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(80)).DependsOn(_authService).DependsOn(_userProfileService).DependsOn(_postsService)
                 .Build();
         }
 
