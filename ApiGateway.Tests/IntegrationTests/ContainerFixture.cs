@@ -34,7 +34,17 @@ namespace ApiGateway.Tests.IntegrationTests
             var dockerHubUsername = Environment.GetEnvironmentVariable("DOCKER_HUB_USERNAME");
             dockerHubUsername ??= configuration["DOCKER_HUB_USERNAME"];
 
-            ArgumentException.ThrowIfNullOrEmpty(dockerHubUsername);
+            var rabbitMqHost = Environment.GetEnvironmentVariable("RABBITMQ_HOST");
+            rabbitMqHost ??= configuration["RABBITMQ_HOST"];
+
+            var sqlServerPassword = Environment.GetEnvironmentVariable("SQL_SERVER_PASSWORD");
+            sqlServerPassword ??= configuration["SQL_SERVER_PASSWORD"];
+
+            if (dockerHubUsername == null || rabbitMqHost == null || sqlServerPassword == null)
+            {
+                Log.Logger.Fatal("Can't get environment variables");
+                throw new ArgumentException("Environment variables is not configured properly.");
+            }
 
             var _networkName = "integration-tests" + Guid.NewGuid();
             _network = new NetworkBuilder()
@@ -52,7 +62,7 @@ namespace ApiGateway.Tests.IntegrationTests
             _sqlServer = new ContainerBuilder()
                 .WithImage("mcr.microsoft.com/mssql/server:2022-latest")
                 .WithEnvironment("ACCEPT_EULA", "Y")
-                .WithEnvironment("SA_PASSWORD", Environment.GetEnvironmentVariable("SQL_SERVER_PASSWORD"))
+                .WithEnvironment("SA_PASSWORD", sqlServerPassword)
                 .WithPortBinding(1433, true)
                 .WithNetwork(_networkName)
                 .WithLogger(logger)
@@ -66,7 +76,7 @@ namespace ApiGateway.Tests.IntegrationTests
                 .WithPortBinding(5672, true)
                 .WithNetwork(_networkName)
                 .WithLogger(logger)
-                .WithNetworkAliases(Environment.GetEnvironmentVariable("RABBITMQ_HOST"))
+                .WithNetworkAliases()
                 .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(5672))
                 .Build();
 
@@ -132,12 +142,12 @@ namespace ApiGateway.Tests.IntegrationTests
 
             await Task.Delay(TimeSpan.FromSeconds(30));
 
-            Log.Debug("SQL_SERVER:" + _sqlServer.Health.ToString() + " | " + _sqlServer.State.ToString());
-            Log.Debug("BROKER:" + _broker.Health.ToString() + " | " + _broker.State.ToString());
-            Log.Debug("AUTH:" + _authService.Health.ToString() + " | " + _authService.State.ToString());
-            Log.Debug("USER:" + _userProfileService.Health.ToString() + " | " + _userProfileService.State.ToString());
-            Log.Debug("POST:" + _postsService.Health.ToString() + " | " + _postsService.State.ToString());
-            Log.Debug("APIGATEWAY:" + _apiGateway.Health.ToString() + " | " + _apiGateway.State.ToString());
+            Log.Information("SQL_SERVER:" + _sqlServer.Health.ToString() + " | " + _sqlServer.State.ToString());
+            Log.Information("BROKER:" + _broker.Health.ToString() + " | " + _broker.State.ToString());
+            Log.Information("AUTH:" + _authService.Health.ToString() + " | " + _authService.State.ToString());
+            Log.Information("USER:" + _userProfileService.Health.ToString() + " | " + _userProfileService.State.ToString());
+            Log.Information("POST:" + _postsService.Health.ToString() + " | " + _postsService.State.ToString());
+            Log.Information("APIGATEWAY:" + _apiGateway.Health.ToString() + " | " + _apiGateway.State.ToString());
 
             var apiPort = _apiGateway.GetMappedPublicPort(80);
             var baseUrl = $"http://localhost:{apiPort}";

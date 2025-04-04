@@ -41,6 +41,10 @@ rabbitMqHost ??= configuration["RABBITMQ_HOST"];
 rabbitMqUsername ??= configuration["RABBITMQ_USERNAME"];
 rabbitMqUsername ??= configuration["RABBITMQ_PASSWORD"];
 
+Log.Logger.Debug("RabbitMqHost: {Host}", rabbitMqHost);
+Log.Logger.Debug("RabbitMqUsername is set: {IsSet}", !string.IsNullOrWhiteSpace(rabbitMqUsername));
+Log.Logger.Debug("RabbitMqPassword is set: {IsSet}", !string.IsNullOrWhiteSpace(rabbitMqPassword));
+
 if (rabbitMqUsername == null || rabbitMqPassword == null || rabbitMqHost == null)
 {
     Log.Logger.Fatal("Can't get connection settings for rabbitMq");
