@@ -42,7 +42,10 @@ rabbitMqUsername ??= configuration["RABBITMQ_USERNAME"];
 rabbitMqUsername ??= configuration["RABBITMQ_PASSWORD"];
 
 if (rabbitMqUsername == null || rabbitMqPassword == null || rabbitMqHost == null)
+{
+    Log.Logger.Fatal("Can't get connection settings for rabbitMq");
     throw new ArgumentException("RabbitMq connection settings is not configured properly.");
+}
 
 builder.Services.AddDbContext<AuthDbContext>(option =>
     option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));

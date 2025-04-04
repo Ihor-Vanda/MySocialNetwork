@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Xunit;
 using DotNet.Testcontainers.Configurations;
+using Serilog;
 
 namespace ApiGateway.Tests.IntegrationTests
 {
@@ -42,7 +43,7 @@ namespace ApiGateway.Tests.IntegrationTests
 
             var loggerFactory = LoggerFactory.Create(builder =>
                 {
-                    builder.AddConsole();
+                    builder.AddSerilog();
                     builder.SetMinimumLevel(LogLevel.Debug);
                 });
             var logger = loggerFactory.CreateLogger("Testcontainers");
@@ -76,7 +77,9 @@ namespace ApiGateway.Tests.IntegrationTests
                 .WithNetwork(_networkName)
                 .WithLogger(logger)
                 .WithNetworkAliases("auth")
-                .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(80)).DependsOn(_sqlServer).DependsOn(_broker)
+                .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("Server is listening on"))
+                .DependsOn(_sqlServer)
+                .DependsOn(_broker)
                 .Build();
 
             // UserProfileService
@@ -86,7 +89,9 @@ namespace ApiGateway.Tests.IntegrationTests
                 .WithNetwork(_networkName)
                 .WithLogger(logger)
                 .WithNetworkAliases("user")
-                .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(80)).DependsOn(_sqlServer).DependsOn(_broker)
+                .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("Server is listening on"))
+                .DependsOn(_sqlServer)
+                .DependsOn(_broker)
                 .Build();
 
             // PostsService
@@ -96,7 +101,9 @@ namespace ApiGateway.Tests.IntegrationTests
                 .WithNetwork(_networkName)
                 .WithLogger(logger)
                 .WithNetworkAliases("post")
-                .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(80)).DependsOn(_sqlServer).DependsOn(_broker)
+                .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("Server is listening on"))
+                .DependsOn(_sqlServer)
+                .DependsOn(_broker)
                 .Build();
 
             // ApiGateway
@@ -106,7 +113,10 @@ namespace ApiGateway.Tests.IntegrationTests
                 .WithNetwork(_networkName)
                 .WithLogger(logger)
                 .WithNetworkAliases("api")
-                .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(80)).DependsOn(_authService).DependsOn(_userProfileService).DependsOn(_postsService)
+                .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("Server is listening on"))
+                .DependsOn(_authService)
+                .DependsOn(_userProfileService)
+                .DependsOn(_postsService)
                 .Build();
         }
 
@@ -120,7 +130,14 @@ namespace ApiGateway.Tests.IntegrationTests
             await _postsService.StartAsync();
             await _apiGateway.StartAsync();
 
-            await Task.Delay(TimeSpan.FromSeconds(15));
+            await Task.Delay(TimeSpan.FromSeconds(30));
+
+            Log.Debug("SQL_SERVER:" + _sqlServer.Health.ToString() + " | " + _sqlServer.State.ToString());
+            Log.Debug("BROKER:" + _broker.Health.ToString() + " | " + _broker.State.ToString());
+            Log.Debug("AUTH:" + _authService.Health.ToString() + " | " + _authService.State.ToString());
+            Log.Debug("USER:" + _userProfileService.Health.ToString() + " | " + _userProfileService.State.ToString());
+            Log.Debug("POST:" + _postsService.Health.ToString() + " | " + _postsService.State.ToString());
+            Log.Debug("APIGATEWAY:" + _apiGateway.Health.ToString() + " | " + _apiGateway.State.ToString());
 
             var apiPort = _apiGateway.GetMappedPublicPort(80);
             var baseUrl = $"http://localhost:{apiPort}";
