@@ -53,10 +53,10 @@ builder.Services.AddMassTransit(x =>
 {
     x.UsingRabbitMq((context, cfg) =>
     {
-        cfg.Host(rabbitMqHost, "/", h =>
+        cfg.Host("broker", "/", h =>
         {
-            h.Username(rabbitMqUsername);
-            h.Password(rabbitMqPassword);
+            h.Username("guest");
+            h.Password("guest");
         });
     });
 });
