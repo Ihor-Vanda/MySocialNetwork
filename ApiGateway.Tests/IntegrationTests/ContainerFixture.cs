@@ -43,7 +43,7 @@ namespace ApiGateway.Tests.IntegrationTests
 
             var loggerFactory = LoggerFactory.Create(builder =>
                 {
-                    builder.AddSerilog();
+                    builder.AddConsole();
                     builder.SetMinimumLevel(LogLevel.Debug);
                 });
             var logger = loggerFactory.CreateLogger("Testcontainers");
@@ -77,7 +77,7 @@ namespace ApiGateway.Tests.IntegrationTests
                 .WithNetwork(_networkName)
                 .WithLogger(logger)
                 .WithNetworkAliases("auth")
-                .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("Server is listening on"))
+                .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(80))
                 .DependsOn(_sqlServer)
                 .DependsOn(_broker)
                 .Build();
@@ -89,7 +89,7 @@ namespace ApiGateway.Tests.IntegrationTests
                 .WithNetwork(_networkName)
                 .WithLogger(logger)
                 .WithNetworkAliases("user")
-                .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("Server is listening on"))
+                .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(80))
                 .DependsOn(_sqlServer)
                 .DependsOn(_broker)
                 .Build();
@@ -101,7 +101,7 @@ namespace ApiGateway.Tests.IntegrationTests
                 .WithNetwork(_networkName)
                 .WithLogger(logger)
                 .WithNetworkAliases("post")
-                .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("Server is listening on"))
+                .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(80))
                 .DependsOn(_sqlServer)
                 .DependsOn(_broker)
                 .Build();
@@ -113,7 +113,7 @@ namespace ApiGateway.Tests.IntegrationTests
                 .WithNetwork(_networkName)
                 .WithLogger(logger)
                 .WithNetworkAliases("api")
-                .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("Server is listening on"))
+                .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(80))
                 .DependsOn(_authService)
                 .DependsOn(_userProfileService)
                 .DependsOn(_postsService)
