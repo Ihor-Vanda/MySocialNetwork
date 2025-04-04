@@ -28,8 +28,12 @@ namespace ApiGateway.Tests.IntegrationTests
         public ContainerFixture()
         {
             DotEnv.Load();
+            var configuration = new ConfigurationBuilder().AddEnvironmentVariables().Build();
 
-            var dockerHubUsername = Environment.GetEnvironmentVariable("DOCKER_HUB_USERNAME") ?? throw new ArgumentException("DOCKER_HUB_USERNAME is not configured properly.");
+            var dockerHubUsername = Environment.GetEnvironmentVariable("DOCKER_HUB_USERNAME");
+            dockerHubUsername ??= configuration["DOCKER_HUB_USERNAME"];
+
+            ArgumentException.ThrowIfNullOrEmpty(dockerHubUsername);
 
             var _networkName = "integration-tests" + Guid.NewGuid();
             _network = new NetworkBuilder()

@@ -14,9 +14,6 @@ var builder = WebApplication.CreateBuilder(args);
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
-DotEnv.Load();
-
-// Serilog 
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
     .WriteTo.File("Logs/log.txt", rollingInterval: RollingInterval.Day)
@@ -29,13 +26,19 @@ Log.Logger = new LoggerConfiguration()
 
 builder.Host.UseSerilog();
 
+DotEnv.Load();
+var configuration = new ConfigurationBuilder().AddEnvironmentVariables().Build();
+
 var rabbitMqHost = Environment.GetEnvironmentVariable("RABBITMQ_HOST");
 var rabbitMqUsername = Environment.GetEnvironmentVariable("RABBITMQ_USERNAME");
 var rabbitMqPassword = Environment.GetEnvironmentVariable("RABBITMQ_PASSWORD");
-if (string.IsNullOrWhiteSpace(rabbitMqHost) || string.IsNullOrWhiteSpace(rabbitMqUsername) || string.IsNullOrWhiteSpace(rabbitMqPassword))
-{
-    throw new ArgumentException("RabbitMq connection is not configured properly.");
-}
+
+rabbitMqHost ??= configuration["RABBITMQ_HOST"];
+rabbitMqUsername ??= configuration["RABBITMQ_USERNAME"];
+rabbitMqUsername ??= configuration["RABBITMQ_PASSWORD"];
+
+if (rabbitMqUsername == null || rabbitMqPassword == null || rabbitMqHost == null)
+    throw new ArgumentException("RabbitMq connection settings is not configured properly.");
 
 builder.Services.AddDbContext<UserProfileDbContext>(option =>
     option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
