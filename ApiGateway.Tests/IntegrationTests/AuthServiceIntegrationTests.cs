@@ -6,13 +6,15 @@ using Xunit;
 
 namespace ApiGateway.Tests.IntegrationTests
 {
-    [Collection("Docker Collection")]
-    public class AuthServiceIntegrationTests : IClassFixture<ContainerFixture>
+    [Collection("TestsCollection")]
+    public class AuthServiceIntegrationTests
     {
+        private readonly ContainerFixture _fixture;
         private readonly HttpClient _client;
 
         public AuthServiceIntegrationTests(ContainerFixture fixture)
         {
+            _fixture = fixture;
             _client = fixture.HttpClient;
         }
 

@@ -8,8 +8,8 @@ using Xunit;
 
 namespace ApiGateway.Tests.IntegrationTests
 {
-    [Collection("Docker Collection")]
-    public class UserProfileServiceIntegrationTests : IClassFixture<ContainerFixture>
+    [Collection("TestsCollection")]
+    public class UserProfileServiceIntegrationTests
     {
         private readonly HttpClient _client;
 

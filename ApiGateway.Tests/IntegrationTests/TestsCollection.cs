@@ -5,6 +5,6 @@ using System.Threading.Tasks;
 
 namespace ApiGateway.Tests.IntegrationTests
 {
-    [CollectionDefinition("Docker Collection")]
-    public class DockerCollection : ICollectionFixture<ContainerFixture> { }
+    [CollectionDefinition("TestsCollection")]
+    public class TestsCollection : ICollectionFixture<ContainerFixture> { }
 }
