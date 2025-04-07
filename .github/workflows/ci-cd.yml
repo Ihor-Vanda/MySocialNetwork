@@ -19,6 +19,11 @@ jobs:
       RABBITMQ_PASSWORD: ${{secrets.RABBITMQ_PASSWORD}}
 
     steps:
+      - name: Print RabbitMQ environment variables
+        run: |
+          echo "RABBITMQ_HOST=$RABBITMQ_HOST"
+          echo "RABBITMQ_USERNAME=$RABBITMQ_USERNAME"
+
       - name: Checkout repository
         uses: actions/checkout@v3
 
