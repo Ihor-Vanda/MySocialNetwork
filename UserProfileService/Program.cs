@@ -29,19 +29,19 @@ builder.Host.UseSerilog();
 DotEnv.Load();
 var configuration = new ConfigurationBuilder().AddEnvironmentVariables().Build();
 
-var rabbitMqHost = Environment.GetEnvironmentVariable("RABBITMQ_HOST");
-var rabbitMqUsername = Environment.GetEnvironmentVariable("RABBITMQ_USERNAME");
-var rabbitMqPassword = Environment.GetEnvironmentVariable("RABBITMQ_PASSWORD");
+// var rabbitMqHost = Environment.GetEnvironmentVariable("RABBITMQ_HOST");
+// var rabbitMqUsername = Environment.GetEnvironmentVariable("RABBITMQ_USERNAME");
+// var rabbitMqPassword = Environment.GetEnvironmentVariable("RABBITMQ_PASSWORD");
 
-rabbitMqHost ??= configuration["RABBITMQ_HOST"];
-rabbitMqUsername ??= configuration["RABBITMQ_USERNAME"];
-rabbitMqUsername ??= configuration["RABBITMQ_PASSWORD"];
+// rabbitMqHost ??= configuration["RABBITMQ_HOST"];
+// rabbitMqUsername ??= configuration["RABBITMQ_USERNAME"];
+// rabbitMqUsername ??= configuration["RABBITMQ_PASSWORD"];
 
-if (rabbitMqUsername == null || rabbitMqPassword == null || rabbitMqHost == null)
-{
-    Log.Logger.Fatal("Can't get connection settings for rabbitMq");
-    throw new ArgumentException("RabbitMq connection settings is not configured properly.");
-}
+// if (rabbitMqUsername == null || rabbitMqPassword == null || rabbitMqHost == null)
+// {
+//     Log.Logger.Fatal("Can't get connection settings for rabbitMq");
+//     throw new ArgumentException("RabbitMq connection settings is not configured properly.");
+// }
 
 builder.Services.AddDbContext<UserProfileDbContext>(option =>
     option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -49,17 +49,17 @@ builder.Services.AddDbContext<UserProfileDbContext>(option =>
 builder.Services.AddHealthChecks()
     .AddDbContextCheck<UserProfileDbContext>();
 
-builder.Services.AddMassTransit(x =>
-{
-    x.UsingRabbitMq((context, cfg) =>
-    {
-        cfg.Host("broker", "/", h =>
-        {
-            h.Username("guest");
-            h.Password("guest");
-        });
-    });
-});
+// builder.Services.AddMassTransit(x =>
+// {
+//     x.UsingRabbitMq((context, cfg) =>
+//     {
+//         cfg.Host("broker", "/", h =>
+//         {
+//             h.Username("guest");
+//             h.Password("guest");
+//         });
+//     });
+// });
 
 builder.Services.AddControllers();
 

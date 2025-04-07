@@ -46,12 +46,12 @@ namespace AuthService.Controllers
 
             if (result.Succeeded)
             {
-                await _bus.Publish(new UserCreatedEvent
-                {
-                    UserId = Guid.Parse(user.Id),
-                    Email = user.Email,
-                    Name = user.UserName
-                });
+                // await _bus.Publish(new UserCreatedEvent
+                // {
+                //     UserId = Guid.Parse(user.Id),
+                //     Email = user.Email,
+                //     Name = user.UserName
+                // });
 
                 return CreatedAtAction(nameof(Register), new { id = model.Id }, model);
             }
