@@ -23,10 +23,10 @@ Log.Logger = new LoggerConfiguration()
 
 builder.Host.UseSerilog();
 
-if (File.Exists("./.env"))
-{
-    DotEnv.Load();
-}
+// if (File.Exists("./.env"))
+// {
+//     DotEnv.Load();
+// }
 
 var rabbitMqHost = Environment.GetEnvironmentVariable("RABBITMQ_HOST");
 var rabbitMqUsername = Environment.GetEnvironmentVariable("RABBITMQ_USERNAME");
@@ -36,16 +36,16 @@ Console.WriteLine($"RABBITMQ_HOST: {rabbitMqHost}");
 Console.WriteLine($"RABBITMQ_USERNAME: {rabbitMqUsername}");
 Console.WriteLine($"RABBITMQ_PASSWORD is {(string.IsNullOrWhiteSpace(rabbitMqPassword) ? "not set" : "set")}");
 
-// if (rabbitMqHost == null || rabbitMqUsername == null || rabbitMqPassword == null)
-// {
-//     var configuration = new ConfigurationBuilder()
-//         .AddEnvironmentVariables()
-//         .Build();
+if (rabbitMqHost == null || rabbitMqUsername == null || rabbitMqPassword == null)
+{
+    var configuration = new ConfigurationBuilder()
+        .AddEnvironmentVariables()
+        .Build();
 
-//     rabbitMqHost = configuration["RABBITMQ_HOST"];
-//     rabbitMqUsername = configuration["RABBITMQ_USERNAME"];
-//     rabbitMqPassword = configuration["RABBITMQ_PASSWORD"];
-// }
+    rabbitMqHost = configuration["RABBITMQ_HOST"];
+    rabbitMqUsername = configuration["RABBITMQ_USERNAME"];
+    rabbitMqPassword = configuration["RABBITMQ_PASSWORD"];
+}
 
 if (rabbitMqHost == null || rabbitMqUsername == null || rabbitMqPassword == null)
 {
