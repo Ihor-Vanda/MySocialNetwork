@@ -20,17 +20,16 @@ namespace AuthService.Controllers
         private readonly UserManager<IdentityUser> _userManager;
         private readonly SignInManager<IdentityUser> _signInManager;
         protected readonly IConfiguration _configuration;
-        private readonly IBus _bus;
+        // private readonly IBus _bus;
 
         public AuthController(UserManager<IdentityUser> userManager,
                                 SignInManager<IdentityUser> signInManager,
-                                IConfiguration configuration,
-                                IBus bus)
+                                IConfiguration configuration)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _configuration = configuration;
-            _bus = bus;
+            // _bus = bus;
         }
 
         [HttpPost("register")]
