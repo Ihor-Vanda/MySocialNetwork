@@ -20,16 +20,17 @@ namespace AuthService.Controllers
         private readonly UserManager<IdentityUser> _userManager;
         private readonly SignInManager<IdentityUser> _signInManager;
         protected readonly IConfiguration _configuration;
-        // private readonly IBus _bus;
+        private readonly IBus _bus;
 
         public AuthController(UserManager<IdentityUser> userManager,
                                 SignInManager<IdentityUser> signInManager,
-                                IConfiguration configuration)
+                                IConfiguration configuration,
+                                IBus bus)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _configuration = configuration;
-            // _bus = bus;
+            _bus = bus;
         }
 
         [HttpPost("register")]
@@ -45,12 +46,12 @@ namespace AuthService.Controllers
 
             if (result.Succeeded)
             {
-                // await _bus.Publish(new UserCreatedEvent
-                // {
-                //     UserId = Guid.Parse(user.Id),
-                //     Email = user.Email,
-                //     Name = user.UserName
-                // });
+                await _bus.Publish(new UserCreatedEvent
+                {
+                    UserId = Guid.Parse(user.Id),
+                    Email = user.Email,
+                    Name = user.UserName
+                });
 
                 return CreatedAtAction(nameof(Register), new { id = model.Id }, model);
             }

@@ -58,17 +58,17 @@ builder.Services.AddDbContext<PostDbContext>(option =>
 builder.Services.AddHealthChecks()
     .AddDbContextCheck<PostDbContext>();
 
-// builder.Services.AddMassTransit(x =>
-// {
-//     x.UsingRabbitMq((context, cfg) =>
-//     {
-//         cfg.Host("broker", "/", h =>
-//         {
-//             h.Username("guest");
-//             h.Password("guest");
-//         });
-//     });
-// });
+builder.Services.AddMassTransit(x =>
+{
+    x.UsingRabbitMq((context, cfg) =>
+    {
+        cfg.Host("broker", "/", h =>
+        {
+            h.Username("guest");
+            h.Password("guest");
+        });
+    });
+});
 
 builder.Services.AddControllers();
 
