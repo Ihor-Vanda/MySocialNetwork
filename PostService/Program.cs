@@ -29,7 +29,7 @@ var rabbitMqHost = Environment.GetEnvironmentVariable("RABBITMQ_HOST");
 var rabbitMqUsername = Environment.GetEnvironmentVariable("RABBITMQ_USERNAME");
 var rabbitMqPassword = Environment.GetEnvironmentVariable("RABBITMQ_PASSWORD");
 
-if (rabbitMqUsername == null || rabbitMqPassword == null || rabbitMqHost == null)
+if (rabbitMqHost == null || rabbitMqUsername == null || rabbitMqPassword == null)
 {
     var configuration = new ConfigurationBuilder()
         .AddEnvironmentVariables()
@@ -37,12 +37,12 @@ if (rabbitMqUsername == null || rabbitMqPassword == null || rabbitMqHost == null
 
     rabbitMqHost = configuration["RABBITMQ_HOST"];
     rabbitMqUsername = configuration["RABBITMQ_USERNAME"];
-    rabbitMqUsername = configuration["RABBITMQ_PASSWORD"];
+    rabbitMqPassword = configuration["RABBITMQ_PASSWORD"];
 }
 
-if (rabbitMqUsername == null || rabbitMqPassword == null || rabbitMqHost == null)
+if (rabbitMqHost == null || rabbitMqUsername == null || rabbitMqPassword == null)
 {
-    throw new ArgumentException("RabbitMq connection settings is not configured properly.");
+    throw new ArgumentException("RabbitMq connection settings are not configured properly.");
 }
 
 builder.Services.AddDbContext<PostDbContext>(option =>
