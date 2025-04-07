@@ -23,7 +23,7 @@ Log.Logger = new LoggerConfiguration()
 
 builder.Host.UseSerilog();
 
-DotEnv.Load();
+if (File.Exists("/.env")) DotEnv.Load();
 
 var rabbitMqHost = Environment.GetEnvironmentVariable("RABBITMQ_HOST");
 var rabbitMqUsername = Environment.GetEnvironmentVariable("RABBITMQ_USERNAME");
