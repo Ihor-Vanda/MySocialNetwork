@@ -28,13 +28,49 @@ namespace ApiGateway.Tests.IntegrationTests
 
         public ContainerFixture()
         {
-            DotEnv.Load();
-            var configuration = new ConfigurationBuilder().AddEnvironmentVariables().Build();
+            if (File.Exists("./.env"))
+            {
+                DotEnv.Load();
+            }
 
             var dockerHubUsername = Environment.GetEnvironmentVariable("DOCKER_HUB_USERNAME");
-            dockerHubUsername ??= configuration["DOCKER_HUB_USERNAME"];
+            var sqlServerPassword = Environment.GetEnvironmentVariable("SQL_SERVER_PASSWORD");
 
-            var _networkName = "integration-tests" + Guid.NewGuid();
+            var rabbitMqHost = Environment.GetEnvironmentVariable("RABBITMQ_HOST");
+            var rabbitMqUsername = Environment.GetEnvironmentVariable("RABBITMQ_USERNAME");
+            var rabbitMqPassword = Environment.GetEnvironmentVariable("RABBITMQ_PASSWORD");
+
+            if (rabbitMqHost == null || rabbitMqUsername == null || rabbitMqPassword == null
+                || dockerHubUsername == null || sqlServerPassword == null)
+            {
+                var configuration = new ConfigurationBuilder()
+                    .AddEnvironmentVariables()
+                    .Build();
+
+                dockerHubUsername = configuration["DOCKER_HUB_USERNAME"];
+                sqlServerPassword = configuration["SQL_SERVER_PASSWORD"];
+                rabbitMqHost = configuration["RABBITMQ_HOST"];
+                rabbitMqUsername = configuration["RABBITMQ_USERNAME"];
+                rabbitMqPassword = configuration["RABBITMQ_PASSWORD"];
+            }
+
+            if (dockerHubUsername == null)
+            {
+                throw new ArgumentException("Docker Hub username is not configured properly");
+            }
+
+            if (sqlServerPassword == null)
+            {
+                throw new ArgumentException("SQL Server Password is not configured properly");
+            }
+
+            if (rabbitMqHost == null || rabbitMqUsername == null || rabbitMqPassword == null)
+            {
+                throw new ArgumentException("RabbitMq connection settings are not configured properly");
+            }
+
+
+            var _networkName = "integration-tests";
             _network = new NetworkBuilder()
             .WithName(_networkName)
             .Build();
@@ -43,7 +79,7 @@ namespace ApiGateway.Tests.IntegrationTests
             _sqlServer = new ContainerBuilder()
                 .WithImage("mcr.microsoft.com/mssql/server:2022-latest")
                 .WithEnvironment("ACCEPT_EULA", "Y")
-                .WithEnvironment("SA_PASSWORD", "Str0ngPass123!")
+                .WithEnvironment("SA_PASSWORD", sqlServerPassword)
                 .WithPortBinding(1433, true)
                 .WithNetwork(_networkName)
                 .WithNetworkAliases("db")
@@ -55,13 +91,16 @@ namespace ApiGateway.Tests.IntegrationTests
                 .WithImage("rabbitmq:3-management")
                 .WithPortBinding(5672, true)
                 .WithNetwork(_networkName)
-                .WithNetworkAliases("broker")
+                .WithNetworkAliases(rabbitMqHost)
                 .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(5672))
                 .Build();
 
             // AuthService
             _authService = new ContainerBuilder()
                 .WithImage($"{dockerHubUsername}/mysocialnetwork-auth-service:latest")
+                .WithEnvironment("RABBITMQ_HOST", rabbitMqHost)
+                .WithEnvironment("RABBITMQ_USERNAME", rabbitMqUsername)
+                .WithEnvironment("RABBITMQ_PASSWORD", rabbitMqPassword)
                 .WithPortBinding(80, true)
                 .WithNetwork(_networkName)
                 .WithNetworkAliases("auth")
@@ -73,6 +112,9 @@ namespace ApiGateway.Tests.IntegrationTests
             // UserProfileService
             _userProfileService = new ContainerBuilder()
                 .WithImage($"{dockerHubUsername}/mysocialnetwork-user-profile-service:latest")
+                .WithEnvironment("RABBITMQ_HOST", rabbitMqHost)
+                .WithEnvironment("RABBITMQ_USERNAME", rabbitMqUsername)
+                .WithEnvironment("RABBITMQ_PASSWORD", rabbitMqPassword)
                 .WithPortBinding(80, true)
                 .WithNetwork(_networkName)
                 .WithNetworkAliases("user")
@@ -84,6 +126,9 @@ namespace ApiGateway.Tests.IntegrationTests
             // PostsService
             _postsService = new ContainerBuilder()
                 .WithImage($"{dockerHubUsername}/mysocialnetwork-post-service:latest")
+                .WithEnvironment("RABBITMQ_HOST", rabbitMqHost)
+                .WithEnvironment("RABBITMQ_USERNAME", rabbitMqUsername)
+                .WithEnvironment("RABBITMQ_PASSWORD", rabbitMqPassword)
                 .WithPortBinding(80, true)
                 .WithNetwork(_networkName)
                 .WithNetworkAliases("post")
