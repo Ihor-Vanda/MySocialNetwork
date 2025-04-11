@@ -38,7 +38,7 @@ jobs:
           else
             echo "RABBITMQ_PASSWORD is set";
           fi
-          echo "SQL_SERVER_PASSWORD is set: $(if [ -z "${SQL_SERVER_PASSWORD}" ]; then echo 'false'; else echo 'true'; fi)"
+          echo "DB_PASSWORD is set: $(if [ -z "${DB_PASSWORD}" ]; then echo 'false'; else echo 'true'; fi)"
           echo "DB_USER: ${DB_USER}"
           echo "DB_HOST: ${DB_HOST}"
           echo "DB_PORT: ${DB_PORT}"
