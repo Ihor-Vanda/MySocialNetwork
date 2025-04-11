@@ -11,6 +11,7 @@ namespace UserProfileService.Models
         [Key]
         public required Guid Id { get; set; }
         public required string Login { get; set; }
+        public required string Email { get; set; }
         public string FirstName { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty;
         public required DateTime BirthDate { get; set; }

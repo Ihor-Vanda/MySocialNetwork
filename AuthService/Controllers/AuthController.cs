@@ -17,13 +17,13 @@ namespace AuthService.Controllers
     [Route("auth")]
     public class AuthController : ControllerBase
     {
-        private readonly UserManager<IdentityUser> _userManager;
-        private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly UserManager<User> _userManager;
+        private readonly SignInManager<User> _signInManager;
         protected readonly IConfiguration _configuration;
         private readonly IBus _bus;
 
-        public AuthController(UserManager<IdentityUser> userManager,
-                                SignInManager<IdentityUser> signInManager,
+        public AuthController(UserManager<User> userManager,
+                                SignInManager<User> signInManager,
                                 IConfiguration configuration,
                                 IBus bus)
         {
@@ -41,16 +41,24 @@ namespace AuthService.Controllers
                 return BadRequest(ModelState);
             }
 
-            var user = new IdentityUser { UserName = model.Email, Email = model.Email };
+            var user = new User
+            {
+                Id = model.Id,
+                UserName = model.Login,
+                Email = model.Email,
+                BirthDate = model.BirthDate
+            };
+
             var result = await _userManager.CreateAsync(user, model.Password);
 
             if (result.Succeeded)
             {
                 await _bus.Publish(new UserCreatedEvent
                 {
-                    UserId = Guid.Parse(user.Id),
+                    Id = user.Id,
                     Email = user.Email,
-                    Name = user.UserName
+                    Login = user.UserName,
+                    BirthDate = user.BirthDate,
                 });
 
                 return CreatedAtAction(nameof(Register), new { id = model.Id }, model);
@@ -86,7 +94,7 @@ namespace AuthService.Controllers
             {
                 Subject = new ClaimsIdentity(new Claim[]
                 {
-                new Claim(ClaimTypes.NameIdentifier, user.Id),
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Email, user.Email ?? throw new Exception("Invalid user Email")),
                 }),
                 Expires = DateTime.UtcNow.AddHours(Convert.ToDouble(_configuration["Jwt:ExpiryInHours"])),

@@ -17,6 +17,13 @@ jobs:
       RABBITMQ_HOST: ${{secrets.RABBITMQ_HOST}}
       RABBITMQ_USERNAME: ${{secrets.RABBITMQ_USERNAME}}
       RABBITMQ_PASSWORD: ${{secrets.RABBITMQ_PASSWORD}}
+      DB_PASSWORD: ${{secrets.DB_PASSWORD}}
+      DB_USER: ${{secrets.DB_USER}}
+      DB_HOST: ${{secrets.DB_HOST}}
+      DB_PORT: ${{secrets.DB_PORT}}
+      AUTH_DB_NAME: ${{secrets.AUTH_DB_NAME}}
+      USER_DB_NAME: ${{secrets.USER_DB_NAME}}
+      POST_DB_NAME: ${{secrets.POST_DB_NAME}}
 
     steps:
       - name: Print RabbitMQ environment variables

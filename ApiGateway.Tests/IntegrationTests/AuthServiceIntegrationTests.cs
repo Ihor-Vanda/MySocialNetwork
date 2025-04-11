@@ -25,7 +25,7 @@ namespace ApiGateway.Tests.IntegrationTests
             {
                 Email = "authtest@example.com",
                 Password = "Password123!",
-                Name = "Auth Test",
+                Login = "AuthTest",
                 BirthDate = "1990-01-01T00:00:00Z"
             };
 
@@ -40,7 +40,7 @@ namespace ApiGateway.Tests.IntegrationTests
             {
                 Email = "authlogin@example.com",
                 Password = "Password123!",
-                Name = "Login Test",
+                Login = "LoginTest",
                 BirthDate = "1990-01-01T00:00:00Z"
             };
             var regResponse = await _client.PostAsJsonAsync("/api/auth/register", registrationData);

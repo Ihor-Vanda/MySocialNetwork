@@ -27,6 +27,7 @@ namespace ApiGateway.Tests.IntegrationTests
                 Login = "login",
                 FirstName = "first",
                 LastName = "last",
+                Email = "test@example.com",
                 BirthDate = "1990-01-01T00:00:00Z"
             };
 
@@ -46,6 +47,7 @@ namespace ApiGateway.Tests.IntegrationTests
             {
                 Id = Guid.NewGuid(),
                 Login = "login",
+                Email = "test@example.com",
                 FirstName = "first",
                 LastName = "last",
                 BirthDate = "1990-01-01T00:00:00Z"
@@ -72,6 +74,7 @@ namespace ApiGateway.Tests.IntegrationTests
             {
                 Id = Guid.NewGuid(),
                 Login = "login",
+                Email = "test@example.com",
                 FirstName = "first",
                 LastName = "last",
                 BirthDate = "1990-01-01T00:00:00Z"
@@ -90,8 +93,6 @@ namespace ApiGateway.Tests.IntegrationTests
                     BirthDate = "1990-01-01T00:00:00Z"
                 };
 
-
-
                 var updatedRequest = await _client.PutAsJsonAsync($"/api/profiles/{createdProfile!.Id}", updateRequestData);
                 Assert.Equal(HttpStatusCode.NoContent, updatedRequest.StatusCode);
             }
@@ -108,6 +109,7 @@ namespace ApiGateway.Tests.IntegrationTests
             {
                 Id = Guid.NewGuid(),
                 Login = "login",
+                Email = "test@example.com",
                 FirstName = "first",
                 LastName = "last",
                 BirthDate = "1990-01-01T00:00:00Z"

@@ -1,4 +1,55 @@
 services:
+  db:
+    image: postgres:latest
+    container_name: db
+    environment:
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_USER: MySocNet
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U MySocNet"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+
+  adminer:
+    image: adminer
+    container_name: adminer
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+
+  broker:
+    image: rabbitmq:3-management
+    container_name: broker
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  # elasticsearch:
+  #   image: elasticsearch:8.17.4
+  #   container_name: elasticsearch
+  #   environment:
+  #     - discovery.type=single-node
+  #     - xpack.security.enabled=false
+  #     - xpack.security.http.ssl.enabled=false
+  #   ports:
+  #     - "9200:9200"
+
+  # kibana:
+  #   image: kibana:8.17.4
+  #   container_name: kibana
+  #   environment:
+  #     - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+  #   ports:
+  #     - "5601:5601"
+  #   depends_on:
+  #     - elasticsearch
+
   api:
     build:
       context: .
@@ -17,8 +68,8 @@ services:
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8181/health"]
       interval: 60s
-      timeout: 10s
-      retries: 3
+      timeout: 5s
+      retries: 5
       start_period: 10s
     image: "${DOCKER_HUB_USERNAME}/mysocialnetwork-api-gateway-service:latest"
 
@@ -35,9 +86,9 @@ services:
         condition: service_healthy
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:80/health"]
-      interval: 60s
-      timeout: 3s
-      retries: 3
+      interval: 10s
+      timeout: 5s
+      retries: 5
       start_period: 10s
     image: "${DOCKER_HUB_USERNAME}/mysocialnetwork-auth-service:latest"
 
@@ -55,8 +106,8 @@ services:
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:80/health"]
       interval: 60s
-      timeout: 3s
-      retries: 3
+      timeout: 5s
+      retries: 5
       start_period: 10s
     image: "${DOCKER_HUB_USERNAME}/mysocialnetwork-user-profile-service:latest"
 
@@ -74,57 +125,10 @@ services:
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:80/health"]
       interval: 60s
-      timeout: 3s
-      retries: 3
+      timeout: 5s
+      retries: 5
       start_period: 10s
     image: "${DOCKER_HUB_USERNAME}/mysocialnetwork-post-service:latest"
 
-  db:
-    image: mcr.microsoft.com/mssql/server:2022-latest
-    environment:
-      SA_PASSWORD: "${SQL_SERVER_PASSWORD}"
-      ACCEPT_EULA: "Y"
-    healthcheck:
-      test: /opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P "${SQL_SERVER_PASSWORD}" -Q "SELECT 1" || exit 1
-      interval: 60s
-      timeout: 3s
-      retries: 10
-      start_period: 10s
-    ports:
-      - "1433:1433"
-    volumes:
-      - sql_data:/var/opt/mssql
-
-  elasticsearch:
-    image: elasticsearch:8.17.4
-    environment:
-      - discovery.type=single-node
-      - xpack.security.enabled=false
-      - xpack.security.http.ssl.enabled=false
-    ports:
-      - "9200:9200"
-
-  kibana:
-    image: kibana:8.17.4
-    environment:
-      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
-    ports:
-      - "5601:5601"
-    depends_on:
-      - elasticsearch
-
-  broker:
-    image: rabbitmq:3-management
-    ports:
-      - "5672:5672"
-      - "15672:15672"
-
-  adminer:
-    image: adminer
-    ports:
-      - "8080:8080"
-    depends_on:
-      - db
-
 volumes:
-  sql_data:
+  postgres_data:

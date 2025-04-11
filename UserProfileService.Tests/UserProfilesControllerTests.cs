@@ -34,6 +34,7 @@ public class UserProfilesControllerTests
             Login = "Login",
             FirstName = "John",
             LastName = "Doe",
+            Email = "test@test.com",
             BirthDate = new DateTime(1990, 1, 1),
             Bio = "Hello, world!",
             ProfilePictureUrl = "http://example.com/photo.jpg"
@@ -84,6 +85,7 @@ public class UserProfilesControllerTests
             Login = "Login",
             FirstName = "Alice",
             LastName = "Smith",
+            Email = "test@test.com",
             BirthDate = new DateTime(1985, 5, 5),
             Bio = "Initial bio"
         };
@@ -140,6 +142,7 @@ public class UserProfilesControllerTests
             Login = "Login",
             FirstName = "Bob",
             LastName = "Marley",
+            Email = "test@test.com",
             BirthDate = new DateTime(1975, 2, 6),
             Bio = "Bio text"
         };

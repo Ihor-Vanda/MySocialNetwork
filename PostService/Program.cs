@@ -11,6 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
+// Logger
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
     .WriteTo.File("Logs/log.txt", rollingInterval: RollingInterval.Day)
@@ -23,18 +24,21 @@ Log.Logger = new LoggerConfiguration()
 
 builder.Host.UseSerilog();
 
+
+//Read .env
 if (File.Exists("./.env"))
 {
     DotEnv.Load();
 }
 
+//RabbitMQ
 var rabbitMqHost = Environment.GetEnvironmentVariable("RABBITMQ_HOST");
 var rabbitMqUsername = Environment.GetEnvironmentVariable("RABBITMQ_USERNAME");
 var rabbitMqPassword = Environment.GetEnvironmentVariable("RABBITMQ_PASSWORD");
 
-Console.WriteLine($"RABBITMQ_HOST: {rabbitMqHost}");
-Console.WriteLine($"RABBITMQ_USERNAME: {rabbitMqUsername}");
-Console.WriteLine($"RABBITMQ_PASSWORD is {(string.IsNullOrWhiteSpace(rabbitMqPassword) ? "not set" : "set")}");
+Log.Information($"RABBITMQ_HOST is {(string.IsNullOrWhiteSpace(rabbitMqHost) ? "not set" : "set")}");
+Log.Information($"RABBITMQ_USERNAME is {(string.IsNullOrWhiteSpace(rabbitMqUsername) ? "not set" : "set")}");
+Log.Information($"RABBITMQ_PASSWORD is {(string.IsNullOrWhiteSpace(rabbitMqPassword) ? "not set" : "set")}");
 
 if (rabbitMqHost == null || rabbitMqUsername == null || rabbitMqPassword == null)
 {
@@ -52,23 +56,58 @@ if (rabbitMqHost == null || rabbitMqUsername == null || rabbitMqPassword == null
     throw new ArgumentException("RabbitMq connection settings are not configured properly.");
 }
 
-builder.Services.AddDbContext<PostDbContext>(option =>
-    option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
-builder.Services.AddHealthChecks()
-    .AddDbContextCheck<PostDbContext>();
-
 builder.Services.AddMassTransit(x =>
 {
     x.UsingRabbitMq((context, cfg) =>
     {
-        cfg.Host("broker", "/", h =>
+        cfg.Host(rabbitMqHost, "/", h =>
         {
-            h.Username("guest");
-            h.Password("guest");
+            h.Username(rabbitMqUsername);
+            h.Password(rabbitMqPassword);
         });
     });
 });
+
+//DB
+var dbPassword = Environment.GetEnvironmentVariable("DB_PASSWORD");
+var dbUser = Environment.GetEnvironmentVariable("DB_USER");
+var dbHost = Environment.GetEnvironmentVariable("DB_HOST");
+var dbPort = Environment.GetEnvironmentVariable("DB_PORT");
+var dbName = Environment.GetEnvironmentVariable("DB_NAME");
+
+Log.Information($"DB_PASSWORD is {(string.IsNullOrWhiteSpace(dbPassword) ? "not set" : "set")}");
+Log.Information($"DB_USER is {(string.IsNullOrWhiteSpace(dbUser) ? "not set" : "set")}");
+Log.Information($"DB_HOST is {(string.IsNullOrWhiteSpace(dbHost) ? "not set" : "set")}");
+Log.Information($"DB_PORT is {(string.IsNullOrWhiteSpace(dbPort) ? "not set" : "set")}");
+Log.Information($"DB_NAME is {(string.IsNullOrWhiteSpace(dbName) ? "not set" : "set")}");
+
+if (dbPassword == null || dbUser == null || dbHost == null || dbPort == null || dbName == null)
+{
+    var configuration = new ConfigurationBuilder()
+        .AddEnvironmentVariables()
+        .Build();
+
+    dbPassword = configuration["DB_PASSWORD"];
+    dbUser = configuration["DB_USER"];
+    dbHost = configuration["DB_HOST"];
+    dbPort = configuration["DB_PORT"];
+    dbName = configuration["DB_NAME"];
+}
+
+if (dbPassword == null || dbUser == null || dbHost == null || dbPort == null || dbPassword == null)
+{
+    throw new ArgumentException("DB connction is not configured properly");
+}
+
+var connectionString = $"Host={dbHost};Port={dbPort};Database={dbName};Username={dbUser};Password={dbPassword}";
+
+builder.Services.AddDbContext<PostDbContext>(option =>
+    option.UseNpgsql(connectionString));
+
+
+//HealthCheack
+builder.Services.AddHealthChecks()
+    .AddDbContextCheck<PostDbContext>();
 
 builder.Services.AddControllers();
 
