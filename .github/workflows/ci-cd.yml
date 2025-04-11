@@ -13,7 +13,6 @@ jobs:
 
     env:
       DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-      SQL_SERVER_PASSWORD: ${{ secrets.SQL_SERVER_PASSWORD }}
       RABBITMQ_HOST: ${{secrets.RABBITMQ_HOST}}
       RABBITMQ_USERNAME: ${{secrets.RABBITMQ_USERNAME}}
       RABBITMQ_PASSWORD: ${{secrets.RABBITMQ_PASSWORD}}
@@ -26,8 +25,12 @@ jobs:
       POST_DB_NAME: ${{secrets.POST_DB_NAME}}
 
     steps:
-      - name: Print RabbitMQ environment variables
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Print Environment Variables for diagnostics
         run: |
+          echo "DOCKER_HUB_USERNAME: ${DOCKER_HUB_USERNAME}"
           echo "RABBITMQ_HOST: ${RABBITMQ_HOST}"
           echo "RABBITMQ_USERNAME: ${RABBITMQ_USERNAME}"
           if [ -z "${RABBITMQ_PASSWORD}" ]; then
@@ -35,9 +38,13 @@ jobs:
           else
             echo "RABBITMQ_PASSWORD is set";
           fi
-
-      - name: Checkout repository
-        uses: actions/checkout@v3
+          echo "SQL_SERVER_PASSWORD is set: $(if [ -z "${SQL_SERVER_PASSWORD}" ]; then echo 'false'; else echo 'true'; fi)"
+          echo "DB_USER: ${DB_USER}"
+          echo "DB_HOST: ${DB_HOST}"
+          echo "DB_PORT: ${DB_PORT}"
+          echo "AUTH_DB_NAME: ${AUTH_DB_NAME}"
+          echo "USER_DB_NAME: ${USER_DB_NAME}"
+          echo "POST_DB_NAME: ${POST_DB_NAME}"
 
       - name: Set up .NET
         uses: actions/setup-dotnet@v3
