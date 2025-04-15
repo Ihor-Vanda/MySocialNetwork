@@ -57,10 +57,10 @@ if (dbPassword == null || dbUser == null || dbHost == null || dbPort == null || 
     dbName = configuration["DB_NAME"];
 }
 
-if (dbPassword == null || dbUser == null || dbHost == null || dbPort == null || dbPassword == null)
-{
-    throw new ArgumentException("DB connection is not configured properly");
-}
+// if (dbPassword == null || dbUser == null || dbHost == null || dbPort == null || dbPassword == null)
+// {
+//     throw new ArgumentException("DB connection is not configured properly");
+// }
 
 var connectionString = $"Host={"db"};Port={"5432"};Database={"PostServiceDB"};Username={"MySocNet"};Password={"Str0ngPass123!"}";
 
@@ -88,10 +88,10 @@ if (rabbitMqHost == null || rabbitMqUsername == null || rabbitMqPassword == null
     rabbitMqPassword = configuration["RABBITMQ_PASSWORD"];
 }
 
-if (rabbitMqHost == null || rabbitMqUsername == null || rabbitMqPassword == null)
-{
-    throw new ArgumentException("RabbitMq connection settings are not configured properly.");
-}
+// if (rabbitMqHost == null || rabbitMqUsername == null || rabbitMqPassword == null)
+// {
+//     throw new ArgumentException("RabbitMq connection settings are not configured properly.");
+// }
 
 builder.Services.AddMassTransit(x =>
 {
