@@ -38,21 +38,15 @@ if (File.Exists("./.env"))
     DotEnv.Load();
 }
 
-//DB
 var dbPassword = Environment.GetEnvironmentVariable("DB_PASSWORD");
 var dbUser = Environment.GetEnvironmentVariable("DB_USER");
 var dbHost = Environment.GetEnvironmentVariable("DB_HOST");
-var dbPort = Environment.GetEnvironmentVariable("DB_PORT");
-var dbName = Environment.GetEnvironmentVariable("DB_NAME");
 
 Log.Information($"DB_PASSWORD is {(string.IsNullOrWhiteSpace(dbPassword) ? "not set" : "set")}");
 Log.Information($"DB_USER is {(string.IsNullOrWhiteSpace(dbUser) ? "not set" : "set")}");
 Log.Information($"DB_HOST is {(string.IsNullOrWhiteSpace(dbHost) ? "not set" : "set")}");
-Log.Information($"DB_PORT is {(string.IsNullOrWhiteSpace(dbPort) ? "not set" : "set")}");
-Log.Information($"DB_NAME is {(string.IsNullOrWhiteSpace(dbName) ? "not set" : "set")}");
 
-
-if (dbPassword == null || dbUser == null || dbHost == null || dbPort == null || dbName == null)
+if (dbPassword == null || dbUser == null || dbHost == null)
 {
     var configuration = new ConfigurationBuilder()
         .AddEnvironmentVariables()
@@ -61,17 +55,14 @@ if (dbPassword == null || dbUser == null || dbHost == null || dbPort == null || 
     dbPassword = configuration["DB_PASSWORD"];
     dbUser = configuration["DB_USER"];
     dbHost = configuration["DB_HOST"];
-    dbPort = configuration["DB_PORT"];
-    dbName = configuration["DB_NAME"];
 }
 
-// if (dbPassword == null || dbUser == null || dbHost == null || dbPort == null || dbName == null)
-// {
-//     throw new ArgumentException("DB connection is not configured properly");
-// }
+if (dbPassword == null || dbUser == null || dbHost == null)
+{
+    throw new ArgumentException("DB connection is not configured properly");
+}
 
-var connectionString = $"Host={"db"};Port={"5432"};Database={"AuthServiceDB"};Username={"MySocNet"};Password={"Str0ngPass123!"}";
-
+var connectionString = $"Host={dbHost};Port=5432;Database=AuthServiceDB;Username={dbUser};Password={dbPassword}";
 builder.Services.AddDbContext<AuthDbContext>(option =>
     option.UseNpgsql(connectionString));
 
@@ -99,19 +90,19 @@ if (rabbitMqHost == null || rabbitMqUsername == null || rabbitMqPassword == null
     rabbitMqPassword = configuration["RABBITMQ_PASSWORD"];
 }
 
-// if (rabbitMqHost == null || rabbitMqUsername == null || rabbitMqPassword == null)
-// {
-//     throw new ArgumentException("RabbitMq connection settings are not configured properly.");
-// }
+if (rabbitMqHost == null || rabbitMqUsername == null || rabbitMqPassword == null)
+{
+    throw new ArgumentException("RabbitMq connection settings are not configured properly.");
+}
 
 builder.Services.AddMassTransit(x =>
 {
     x.UsingRabbitMq((context, cfg) =>
     {
-        cfg.Host("broker", "/", h =>
+        cfg.Host(rabbitMqHost, "/", h =>
         {
-            h.Username("guest");
-            h.Password("guest");
+            h.Username(rabbitMqUsername);
+            h.Password(rabbitMqPassword);
         });
     });
 });

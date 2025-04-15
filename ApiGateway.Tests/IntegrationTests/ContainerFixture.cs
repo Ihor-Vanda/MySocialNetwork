@@ -64,10 +64,6 @@ namespace ApiGateway.Tests.IntegrationTests
             var dbPassword = Environment.GetEnvironmentVariable("DB_PASSWORD");
             var dbUser = Environment.GetEnvironmentVariable("DB_USER");
             var dbHost = Environment.GetEnvironmentVariable("DB_HOST");
-            // var dbPort = Environment.GetEnvironmentVariable("DB_PORT");
-            // var dbNameAuth = Environment.GetEnvironmentVariable("AUTH_DB_NAME");
-            // var dbNameUser = Environment.GetEnvironmentVariable("USER_DB_NAME");
-            // var dbNamePost = Environment.GetEnvironmentVariable("POST_DB_NAME");
 
             if (dbPassword == null || dbUser == null || dbHost == null)
             {
@@ -78,10 +74,6 @@ namespace ApiGateway.Tests.IntegrationTests
                 dbPassword = configuration["DB_PASSWORD"];
                 dbUser = configuration["DB_USER"];
                 dbHost = configuration["DB_HOST"];
-                // dbPort = configuration["DB_PORT"];
-                // dbNameAuth = configuration["AUTH_DB_NAME"];
-                // dbNameUser = configuration["USER_DB_NAME"];
-                // dbNamePost = configuration["POST_DB_NAME"];
             }
 
             if (dbPassword == null || dbUser == null || dbHost == null)
