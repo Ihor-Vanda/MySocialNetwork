@@ -111,7 +111,7 @@ namespace ApiGateway.Tests.IntegrationTests
                 .WithImage("rabbitmq:3-management")
                 .WithPortBinding(5672, true)
                 .WithNetwork(_networkName)
-                .WithNetworkAliases("broker")
+                .WithNetworkAliases(rabbitMqHost)
                 .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(5672))
                 .Build();
 
