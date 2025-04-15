@@ -35,16 +35,16 @@ if (File.Exists("./.env"))
 var dbPassword = Environment.GetEnvironmentVariable("DB_PASSWORD");
 var dbUser = Environment.GetEnvironmentVariable("DB_USER");
 var dbHost = Environment.GetEnvironmentVariable("DB_HOST");
-var dbPort = Environment.GetEnvironmentVariable("DB_PORT");
-var dbName = Environment.GetEnvironmentVariable("DB_NAME");
+// var dbPort = Environment.GetEnvironmentVariable("DB_PORT");
+// var dbName = Environment.GetEnvironmentVariable("DB_NAME");
 
 Log.Information($"DB_PASSWORD is {(string.IsNullOrWhiteSpace(dbPassword) ? "not set" : "set")}");
 Log.Information($"DB_USER is {(string.IsNullOrWhiteSpace(dbUser) ? "not set" : "set")}");
 Log.Information($"DB_HOST is {(string.IsNullOrWhiteSpace(dbHost) ? "not set" : "set")}");
-Log.Information($"DB_PORT is {(string.IsNullOrWhiteSpace(dbPort) ? "not set" : "set")}");
-Log.Information($"DB_NAME is {(string.IsNullOrWhiteSpace(dbName) ? "not set" : "set")}");
+// Log.Information($"DB_PORT is {(string.IsNullOrWhiteSpace(dbPort) ? "not set" : "set")}");
+// Log.Information($"DB_NAME is {(string.IsNullOrWhiteSpace(dbName) ? "not set" : "set")}");
 
-if (dbPassword == null || dbUser == null || dbHost == null || dbPort == null || dbName == null)
+if (dbPassword == null || dbUser == null || dbHost == null)
 {
     var configuration = new ConfigurationBuilder()
         .AddEnvironmentVariables()
@@ -53,18 +53,16 @@ if (dbPassword == null || dbUser == null || dbHost == null || dbPort == null || 
     dbPassword = configuration["DB_PASSWORD"];
     dbUser = configuration["DB_USER"];
     dbHost = configuration["DB_HOST"];
-    dbPort = configuration["DB_PORT"];
-    dbName = configuration["DB_NAME"];
+    // dbPort = configuration["DB_PORT"];
+    // dbName = configuration["DB_NAME"];
 }
 
-// if (dbPassword == null || dbUser == null || dbHost == null || dbPort == null || dbPassword == null)
-// {
-//     throw new ArgumentException("DB connection is not configured properly");
-// }
+if (dbPassword == null || dbUser == null || dbHost == null)
+{
+    throw new ArgumentException("DB connection is not configured properly");
+}
 
-var connectionString = $"Host={"db"};Port={"5432"};Database={"PostServiceDB"};Username={"MySocNet"};Password={"Str0ngPass123!"}";
-
-
+var connectionString = $"Host={dbHost};Port=5432;Database=PostServiceDB;Username={dbUser};Password={dbPassword}";
 builder.Services.AddDbContext<PostDbContext>(option =>
     option.UseNpgsql(connectionString));
 

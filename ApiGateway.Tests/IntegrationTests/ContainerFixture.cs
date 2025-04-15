@@ -64,12 +64,12 @@ namespace ApiGateway.Tests.IntegrationTests
             var dbPassword = Environment.GetEnvironmentVariable("DB_PASSWORD");
             var dbUser = Environment.GetEnvironmentVariable("DB_USER");
             var dbHost = Environment.GetEnvironmentVariable("DB_HOST");
-            var dbPort = Environment.GetEnvironmentVariable("DB_PORT");
-            var dbNameAuth = Environment.GetEnvironmentVariable("AUTH_DB_NAME");
-            var dbNameUser = Environment.GetEnvironmentVariable("USER_DB_NAME");
-            var dbNamePost = Environment.GetEnvironmentVariable("POST_DB_NAME");
+            // var dbPort = Environment.GetEnvironmentVariable("DB_PORT");
+            // var dbNameAuth = Environment.GetEnvironmentVariable("AUTH_DB_NAME");
+            // var dbNameUser = Environment.GetEnvironmentVariable("USER_DB_NAME");
+            // var dbNamePost = Environment.GetEnvironmentVariable("POST_DB_NAME");
 
-            if (dbPassword == null || dbUser == null || dbHost == null || dbPort == null || dbNameAuth == null || dbNameUser == null || dbNamePost == null || dbNamePost == null)
+            if (dbPassword == null || dbUser == null || dbHost == null)
             {
                 var configuration = new ConfigurationBuilder()
                     .AddEnvironmentVariables()
@@ -78,13 +78,13 @@ namespace ApiGateway.Tests.IntegrationTests
                 dbPassword = configuration["DB_PASSWORD"];
                 dbUser = configuration["DB_USER"];
                 dbHost = configuration["DB_HOST"];
-                dbPort = configuration["DB_PORT"];
-                dbNameAuth = configuration["AUTH_DB_NAME"];
-                dbNameUser = configuration["USER_DB_NAME"];
-                dbNamePost = configuration["POST_DB_NAME"];
+                // dbPort = configuration["DB_PORT"];
+                // dbNameAuth = configuration["AUTH_DB_NAME"];
+                // dbNameUser = configuration["USER_DB_NAME"];
+                // dbNamePost = configuration["POST_DB_NAME"];
             }
 
-            if (dbPassword == null || dbUser == null || dbHost == null || dbPort == null || dbNameAuth == null || dbNameUser == null || dbNamePost == null || dbNamePost == null)
+            if (dbPassword == null || dbUser == null || dbHost == null)
             {
                 throw new ArgumentException("DB connection is not configured properly");
             }
@@ -98,11 +98,11 @@ namespace ApiGateway.Tests.IntegrationTests
             //Postres
             _postres = new ContainerBuilder()
                 .WithImage("postgres:latest")
-                .WithEnvironment("POSTGRES_PASSWORD", "Str0ngPass123!")
-                .WithEnvironment("POSTGRES_USER", "MySocNet")
+                .WithEnvironment("POSTGRES_PASSWORD", dbPassword)
+                .WithEnvironment("POSTGRES_USER", dbUser)
                 .WithPortBinding(5432, true)
                 .WithNetwork(_networkName)
-                .WithNetworkAliases("db")
+                .WithNetworkAliases(dbHost)
                 .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(5432))
                 .Build();
 
@@ -121,8 +121,6 @@ namespace ApiGateway.Tests.IntegrationTests
                 .WithEnvironment("RABBITMQ_HOST", rabbitMqHost)
                 .WithEnvironment("RABBITMQ_USERNAME", rabbitMqUsername)
                 .WithEnvironment("RABBITMQ_PASSWORD", rabbitMqPassword)
-                .WithEnvironment("AUTH_DB_NAME", dbNameAuth)
-                .WithEnvironment("DB_PORT", dbPort)
                 .WithEnvironment("DB_HOST", dbHost)
                 .WithEnvironment("DB_USER", dbUser)
                 .WithEnvironment("DB_PASSWORD", dbPassword)
@@ -140,8 +138,6 @@ namespace ApiGateway.Tests.IntegrationTests
                 .WithEnvironment("RABBITMQ_HOST", rabbitMqHost)
                 .WithEnvironment("RABBITMQ_USERNAME", rabbitMqUsername)
                 .WithEnvironment("RABBITMQ_PASSWORD", rabbitMqPassword)
-                .WithEnvironment("USER_DB_NAME", dbNameUser)
-                .WithEnvironment("DB_PORT", dbPort)
                 .WithEnvironment("DB_HOST", dbHost)
                 .WithEnvironment("DB_USER", dbUser)
                 .WithEnvironment("DB_PASSWORD", dbPassword)
@@ -159,8 +155,6 @@ namespace ApiGateway.Tests.IntegrationTests
                 .WithEnvironment("RABBITMQ_HOST", rabbitMqHost)
                 .WithEnvironment("RABBITMQ_USERNAME", rabbitMqUsername)
                 .WithEnvironment("RABBITMQ_PASSWORD", rabbitMqPassword)
-                .WithEnvironment("POST_DB_NAME", dbNamePost)
-                .WithEnvironment("DB_PORT", dbPort)
                 .WithEnvironment("DB_HOST", dbHost)
                 .WithEnvironment("DB_USER", dbUser)
                 .WithEnvironment("DB_PASSWORD", dbPassword)
