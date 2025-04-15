@@ -65,7 +65,7 @@ if (dbPassword == null || dbUser == null || dbHost == null || dbPort == null || 
     throw new ArgumentException("DB connection is not configured properly");
 }
 
-var connectionString = $"Host={dbHost};Port={dbPort};Database={dbName};Username={dbUser};Password={dbPassword}";
+var connectionString = $"Host={"db"};Port={"5432"};Database={"UserServiceDB"};Username={"MySocNet"};Password={"Str0ngPass123!"}";
 
 builder.Services.AddDbContext<UserProfileDbContext>(option =>
     option.UseNpgsql(connectionString));

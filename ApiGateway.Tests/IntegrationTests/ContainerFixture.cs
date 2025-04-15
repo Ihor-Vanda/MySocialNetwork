@@ -98,12 +98,12 @@ namespace ApiGateway.Tests.IntegrationTests
             //Postres
             _postres = new ContainerBuilder()
                 .WithImage("postgres:latest")
-                .WithEnvironment("POSTGRES_PASSWORD", dbPassword)
-                .WithEnvironment("POSTGRES_USER", dbUser)
-                .WithPortBinding(dbPort, true)
+                .WithEnvironment("POSTGRES_PASSWORD", "Str0ngPass123!")
+                .WithEnvironment("POSTGRES_USER", "MySocNet")
+                .WithPortBinding(5432, true)
                 .WithNetwork(_networkName)
-                .WithNetworkAliases(dbHost)
-                .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(int.Parse(dbPort)))
+                .WithNetworkAliases("db")
+                .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(5432))
                 .Build();
 
             // RabbitMQ
