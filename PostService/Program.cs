@@ -88,10 +88,10 @@ if (rabbitMqHost == null || rabbitMqUsername == null || rabbitMqPassword == null
     rabbitMqPassword = configuration["RABBITMQ_PASSWORD"];
 }
 
-// if (rabbitMqHost == null || rabbitMqUsername == null || rabbitMqPassword == null)
-// {
-//     throw new ArgumentException("RabbitMq connection settings are not configured properly.");
-// }
+if (rabbitMqHost == null || rabbitMqUsername == null || rabbitMqPassword == null)
+{
+    throw new ArgumentException("RabbitMq connection settings are not configured properly.");
+}
 
 builder.Services.AddMassTransit(x =>
 {
