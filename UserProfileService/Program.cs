@@ -62,7 +62,7 @@ if (dbPassword == null || dbUser == null || dbHost == null || dbPort == null || 
 
 if (dbPassword == null || dbUser == null || dbHost == null || dbPort == null || dbPassword == null)
 {
-    throw new ArgumentException("DB connction is not configured properly");
+    throw new ArgumentException("DB connection is not configured properly");
 }
 
 var connectionString = $"Host={dbHost};Port={dbPort};Database={dbName};Username={dbUser};Password={dbPassword}";
@@ -101,10 +101,10 @@ builder.Services.AddMassTransit(x =>
 
     x.UsingRabbitMq((context, cfg) =>
     {
-        cfg.Host(rabbitMqHost, "/", h =>
+        cfg.Host("broker", "/", h =>
         {
-            h.Username(rabbitMqUsername);
-            h.Password(rabbitMqPassword);
+            h.Username("guest");
+            h.Password("guest");
         });
 
         cfg.ReceiveEndpoint("user-created", e =>
@@ -114,7 +114,7 @@ builder.Services.AddMassTransit(x =>
     });
 });
 
-//HealthCheack
+//HealthCheck
 builder.Services.AddHealthChecks()
     .AddDbContextCheck<UserProfileDbContext>();
 

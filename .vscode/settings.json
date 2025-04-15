@@ -4,6 +4,7 @@
     "aspnet",
     "Hmac",
     "mysocialnetwork",
+    "Npgsql",
     "Serilog",
     "sqlcmd",
     "Testcontainers",

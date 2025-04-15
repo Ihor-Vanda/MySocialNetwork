@@ -38,43 +38,6 @@ if (File.Exists("./.env"))
     DotEnv.Load();
 }
 
-//RabbitMQ
-var rabbitMqHost = Environment.GetEnvironmentVariable("RABBITMQ_HOST");
-var rabbitMqUsername = Environment.GetEnvironmentVariable("RABBITMQ_USERNAME");
-var rabbitMqPassword = Environment.GetEnvironmentVariable("RABBITMQ_PASSWORD");
-
-Log.Information($"RABBITMQ_HOST is {(string.IsNullOrWhiteSpace(rabbitMqHost) ? "not set" : "set")}");
-Log.Information($"RABBITMQ_USERNAME is {(string.IsNullOrWhiteSpace(rabbitMqUsername) ? "not set" : "set")}");
-Log.Information($"RABBITMQ_PASSWORD is {(string.IsNullOrWhiteSpace(rabbitMqPassword) ? "not set" : "set")}");
-
-if (rabbitMqHost == null || rabbitMqUsername == null || rabbitMqPassword == null)
-{
-    var configuration = new ConfigurationBuilder()
-        .AddEnvironmentVariables()
-        .Build();
-
-    rabbitMqHost = configuration["RABBITMQ_HOST"];
-    rabbitMqUsername = configuration["RABBITMQ_USERNAME"];
-    rabbitMqPassword = configuration["RABBITMQ_PASSWORD"];
-}
-
-if (rabbitMqHost == null || rabbitMqUsername == null || rabbitMqPassword == null)
-{
-    throw new ArgumentException("RabbitMq connection settings are not configured properly.");
-}
-
-builder.Services.AddMassTransit(x =>
-{
-    x.UsingRabbitMq((context, cfg) =>
-    {
-        cfg.Host(rabbitMqHost, "/", h =>
-        {
-            h.Username(rabbitMqUsername);
-            h.Password(rabbitMqPassword);
-        });
-    });
-});
-
 //DB
 var dbPassword = Environment.GetEnvironmentVariable("DB_PASSWORD");
 var dbUser = Environment.GetEnvironmentVariable("DB_USER");
@@ -116,7 +79,44 @@ builder.Services.AddIdentity<User, IdentityRole<Guid>>()
     .AddEntityFrameworkStores<AuthDbContext>()
     .AddDefaultTokenProviders();
 
-//HealthCheak
+//RabbitMQ
+var rabbitMqHost = Environment.GetEnvironmentVariable("RABBITMQ_HOST");
+var rabbitMqUsername = Environment.GetEnvironmentVariable("RABBITMQ_USERNAME");
+var rabbitMqPassword = Environment.GetEnvironmentVariable("RABBITMQ_PASSWORD");
+
+Log.Information($"RABBITMQ_HOST is {(string.IsNullOrWhiteSpace(rabbitMqHost) ? "not set" : "set")}");
+Log.Information($"RABBITMQ_USERNAME is {(string.IsNullOrWhiteSpace(rabbitMqUsername) ? "not set" : "set")}");
+Log.Information($"RABBITMQ_PASSWORD is {(string.IsNullOrWhiteSpace(rabbitMqPassword) ? "not set" : "set")}");
+
+if (rabbitMqHost == null || rabbitMqUsername == null || rabbitMqPassword == null)
+{
+    var configuration = new ConfigurationBuilder()
+        .AddEnvironmentVariables()
+        .Build();
+
+    rabbitMqHost = configuration["RABBITMQ_HOST"];
+    rabbitMqUsername = configuration["RABBITMQ_USERNAME"];
+    rabbitMqPassword = configuration["RABBITMQ_PASSWORD"];
+}
+
+if (rabbitMqHost == null || rabbitMqUsername == null || rabbitMqPassword == null)
+{
+    throw new ArgumentException("RabbitMq connection settings are not configured properly.");
+}
+
+builder.Services.AddMassTransit(x =>
+{
+    x.UsingRabbitMq((context, cfg) =>
+    {
+        cfg.Host("broker", "/", h =>
+        {
+            h.Username("guest");
+            h.Password("guest");
+        });
+    });
+});
+
+//HealthCheck
 builder.Services.AddHealthChecks()
     .AddDbContextCheck<AuthDbContext>();
 

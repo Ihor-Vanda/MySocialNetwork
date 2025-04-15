@@ -86,7 +86,7 @@ namespace ApiGateway.Tests.IntegrationTests
 
             if (dbPassword == null || dbUser == null || dbHost == null || dbPort == null || dbNameAuth == null || dbNameUser == null || dbNamePost == null || dbNamePost == null)
             {
-                throw new ArgumentException("DB connction is not configured properly");
+                throw new ArgumentException("DB connection is not configured properly");
             }
 
 
@@ -95,7 +95,7 @@ namespace ApiGateway.Tests.IntegrationTests
             .WithName(_networkName)
             .Build();
 
-            // Postres
+            //Postres
             _postres = new ContainerBuilder()
                 .WithImage("postgres:latest")
                 .WithEnvironment("POSTGRES_PASSWORD", dbPassword)
@@ -111,7 +111,7 @@ namespace ApiGateway.Tests.IntegrationTests
                 .WithImage("rabbitmq:3-management")
                 .WithPortBinding(5672, true)
                 .WithNetwork(_networkName)
-                .WithNetworkAliases(rabbitMqHost)
+                .WithNetworkAliases("broker")
                 .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(5672))
                 .Build();
 
